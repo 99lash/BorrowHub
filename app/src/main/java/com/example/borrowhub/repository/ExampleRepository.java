@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.borrowhub.data.local.AppDatabase;
 import com.example.borrowhub.data.local.dao.ExampleDao;
-import com.example.borrowhub.data.local.entity.Example;
+import com.example.borrowhub.data.local.entity.ExampleEntity;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 public class ExampleRepository {
 
     private final ExampleDao exampleDao;
-    private final LiveData<List<Example>> allExamples;
+    private final LiveData<List<ExampleEntity>> allExamples;
     private final ExecutorService executorService;
 
     public ExampleRepository(Application application) {
@@ -26,19 +26,19 @@ public class ExampleRepository {
         executorService = Executors.newSingleThreadExecutor();
     }
 
-    public LiveData<List<Example>> getAllExamples() {
+    public LiveData<List<ExampleEntity>> getAllExamples() {
         return allExamples;
     }
 
-    public void insert(Example example) {
+    public void insert(ExampleEntity example) {
         executorService.execute(() -> exampleDao.insert(example));
     }
 
-    public void update(Example example) {
+    public void update(ExampleEntity example) {
         executorService.execute(() -> exampleDao.update(example));
     }
 
-    public void delete(Example example) {
+    public void delete(ExampleEntity example) {
         executorService.execute(() -> exampleDao.delete(example));
     }
 }

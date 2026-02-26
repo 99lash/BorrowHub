@@ -7,9 +7,9 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.example.borrowhub.data.local.dao.ExampleDao;
-import com.example.borrowhub.data.local.entity.Example;
+import com.example.borrowhub.data.local.entity.ExampleEntity;
 
-@Database(entities = {Example.class}, version = 1, exportSchema = false)
+@Database(entities = {ExampleEntity.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase instance;

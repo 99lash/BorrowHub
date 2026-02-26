@@ -7,7 +7,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.borrowhub.data.local.entity.Example;
+import com.example.borrowhub.data.local.entity.ExampleEntity;
 
 import java.util.List;
 
@@ -15,14 +15,14 @@ import java.util.List;
 public interface ExampleDao {
 
     @Insert
-    void insert(Example example);
+    void insert(ExampleEntity example);
 
     @Update
-    void update(Example example);
+    void update(ExampleEntity example);
 
     @Delete
-    void delete(Example example);
+    void delete(ExampleEntity example);
 
     @Query("SELECT * FROM examples")
-    LiveData<List<Example>> getAllExamples();
+    LiveData<List<ExampleEntity>> getAllExamples();
 }

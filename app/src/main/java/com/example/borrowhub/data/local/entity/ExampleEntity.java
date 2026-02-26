@@ -4,7 +4,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "examples")
-public class Example {
+public class ExampleEntity {
 
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -12,7 +12,7 @@ public class Example {
     private String name;
     private String description;
 
-    public Example(String name, String description) {
+    public ExampleEntity(String name, String description) {
         this.name = name;
         this.description = description;
     }
