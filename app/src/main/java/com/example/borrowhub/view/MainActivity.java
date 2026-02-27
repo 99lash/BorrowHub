@@ -38,18 +38,19 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        binding.textViewTitle.setText("Welcome to BorrowHub\n(MVVM + Room Architecture Pattern)");
+        binding.textViewTitle.setText(getString(R.string.welcome_dashboard));
+        binding.textViewMessage.setText(getString(R.string.under_construction));
 
         // TAMA NA CONVENTION: 
         // Ang View (Activity) ay inuutusan lang ang ViewModel.
         // Kunwari ito ay nanggaling sa pag-click ng user sa isang "Save" button.
-        viewModel.addExample("Test Item", "Ito ay test lamang galing sa ViewModel logic");
+        // viewModel.addExample("Test Item", "Ito ay test lamang galing sa ViewModel logic");
 
         // Mag-observe tayo sa database, kapag may nadagdag, mag-uupdate ang text
-        viewModel.getAllExamples().observe(this, examples -> {
-            if (binding.textViewMessage != null && examples != null) {
-                binding.textViewMessage.setText("Database Connected!\nBilang ng items sa DB: " + examples.size());
-            }
-        });
+        // viewModel.getAllExamples().observe(this, examples -> {
+        //    if (binding.textViewMessage != null && examples != null) {
+        //        binding.textViewMessage.setText("Database Connected!\nBilang ng items sa DB: " + examples.size());
+        //    }
+        // });
     }
 }

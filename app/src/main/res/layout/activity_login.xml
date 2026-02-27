@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login_gradient"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.45">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="32dp">
+
+                <!-- Logo Section -->
+                <ImageView
+                    android:id="@+id/login_bh_logo"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_marginBottom="24dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/bh_logo"
+                    android:contentDescription="BorrowHub Logo" />
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textColor="@color/gray_900"
+                    android:textSize="28sp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:id="@+id/subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
+                    android:text="@string/app_subtitle"
+                    android:textColor="@color/gray_500"
+                    android:textSize="14sp" />
+
+                <!-- Form -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/username_label"
+                    android:textColor="@color/gray_700"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <EditText
+                    android:id="@+id/username_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/bg_login_input"
+                    android:hint="@string/username_hint"
+                    android:inputType="textPersonName"
+                    android:paddingHorizontal="16dp"
+                    android:textColor="@color/gray_900" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/password_label"
+                    android:textColor="@color/gray_700"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    app:hintEnabled="false"
+                    app:endIconMode="password_toggle"
+                    app:endIconTint="@color/gray_500">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/password_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@drawable/bg_login_input"
+                        android:hint="@string/password_hint"
+                        android:inputType="textPassword"
+                        android:paddingHorizontal="16dp"
+                        android:textColor="@color/gray_900" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/sign_in_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:background="@drawable/bg_login_button"
+                    android:text="@string/sign_in"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:backgroundTint="@null" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/authorized_only"
+                    android:textColor="@color/gray_400"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/copyright_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center"
+            android:text="@string/copyright"
+            android:textColor="@color/gray_500"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

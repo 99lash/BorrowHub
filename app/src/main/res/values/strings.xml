@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">BorrowHub</string>
+    <string name="app_subtitle">Management Information System</string>
+    <string name="username_label">Username</string>
+    <string name="username_hint">Enter your username</string>
+    <string name="password_label">Password</string>
+    <string name="password_hint">Enter your password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="authorized_only">Authorized personnel only</string>
+    <string name="copyright">© 2026 Computer Studies Department. All rights reserved.</string>
+    <string name="login_successful">Login Successful</string>
+    <string name="welcome_message">Welcome to BorrowHub!</string>
+    <string name="invalid_credentials">Invalid Credentials</string>
+    <string name="error_message">Username or password is incorrect.</string>
+    <string name="welcome_dashboard">Welcome to Dashboard</string>
+    <string name="under_construction">Dashboard is under Construction</string>
+    <string name="error_empty_username">Please input username first</string>
+    <string name="error_empty_password">Please input password first</string>
 </resources>
