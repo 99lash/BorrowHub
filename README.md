@@ -8,7 +8,7 @@
 ## About the App
 
 **BorrowHub** is a mobile-based Borrowing Management System built for university use. It streamlines the process of lending and tracking equipment, devices, and other assets managed by the Computer Studies Department (CSD), with oversight from the Management Information System (MIS) staff.
-
+    
 ---
 
 ## Features

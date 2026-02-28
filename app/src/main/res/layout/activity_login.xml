@@ -78,6 +78,9 @@
                     android:hint="@string/username_hint"
                     android:inputType="textPersonName"
                     android:paddingHorizontal="16dp"
+                    android:gravity="center_vertical"
+                    android:textSize="14sp"
+                    android:includeFontPadding="false"
                     android:textColor="@color/gray_900" />
 
                 <TextView
@@ -91,21 +94,29 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_marginBottom="24dp"
+                    android:background="@drawable/bg_login_input"
+                    android:padding="0dp"
                     app:hintEnabled="false"
+                    app:boxBackgroundMode="none"
                     app:endIconMode="password_toggle"
                     app:endIconTint="@color/gray_500">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/password_input"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:background="@drawable/bg_login_input"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
                         android:hint="@string/password_hint"
                         android:inputType="textPassword"
                         android:paddingHorizontal="16dp"
-                        android:textColor="@color/gray_900" />
+                        android:paddingVertical="0dp"
+                        android:gravity="center_vertical"
+                        android:singleLine="true"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/gray_900"
+                        android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button

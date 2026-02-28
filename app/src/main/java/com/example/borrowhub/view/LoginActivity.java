@@ -8,60 +8,55 @@ package com.example.borrowhub.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.borrowhub.R;
+import com.example.borrowhub.databinding.ActivityLoginBinding;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText usernameInput;
-    private EditText passwordInput;
-    private Button signInButton;
+    private ActivityLoginBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        
+        // Initialize View Binding
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // Hide action bar for full screen feel
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-
-        usernameInput = findViewById(R.id.username_input);
-        passwordInput = findViewById(R.id.password_input);
-        signInButton = findViewById(R.id.sign_in_button);
         
-        // Explicitly set the logo
-        ImageView logoView = findViewById(R.id.login_bh_logo);
-        if (logoView != null) {
-            logoView.setImageResource(R.drawable.app_icon);
+        // Explicitly set the logo (already set in XML but ensuring programmatic control if needed)
+        if (binding.loginBhLogo != null) {
+            binding.loginBhLogo.setImageResource(R.drawable.bh_logo);
         }
 
-        signInButton.setOnClickListener(v -> handleSignIn());
+        binding.signInButton.setOnClickListener(v -> handleSignIn());
     }
 
     private void handleSignIn() {
-        String username = usernameInput.getText().toString().trim();
-        String password = passwordInput.getText().toString().trim();
+        String username = binding.usernameInput.getText().toString().trim();
+        String password = binding.passwordInput.getText().toString().trim();
 
         if (username.isEmpty()) {
             Toast.makeText(this, getString(R.string.error_empty_username), Toast.LENGTH_SHORT).show();
-            usernameInput.requestFocus();
+            binding.usernameInput.requestFocus();
             return;
         }
 
         if (password.isEmpty()) {
             Toast.makeText(this, getString(R.string.error_empty_password), Toast.LENGTH_SHORT).show();
-            passwordInput.requestFocus();
+            binding.passwordInput.requestFocus();
             return;
         }
 
+        // Simple hardcoded login for now as per the placeholder requirements
         if (username.equals("user") && password.equals("123")) {
             Toast.makeText(this, getString(R.string.login_successful) + ": " + getString(R.string.welcome_message), Toast.LENGTH_SHORT).show();
             
