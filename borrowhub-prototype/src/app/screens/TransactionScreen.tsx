@@ -13,16 +13,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Check, Search, User, Package, Calendar, Clock, AlertCircle } from "lucide-react";
+import { Check, Search, User, Package, Calendar, Clock, AlertCircle, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-// Item inventory data
-const itemCategories = {
-  Laptop: Array.from({ length: 30 }, (_, i) => `Laptop ${i + 1}`),
-  Projector: Array.from({ length: 5 }, (_, i) => `Projector ${i + 1}`),
-  HDMI: Array.from({ length: 5 }, (_, i) => `HDMI Cable ${i + 1}`),
-  Camera: ["Camera 1", "Camera 2", "Camera 3"],
-  Other: [],
+// Item inventory data by type
+const itemTypesData = {
+  Equipment: [
+    "Projector - Epson EB-X41",
+    "Camera - Canon EOS R6",
+    "Conference Microphone",
+    "Extension Cable 10m",
+    "Wireless Presenter",
+    "Tripod Stand",
+    "HDMI Cable 5m"
+  ],
+  Laptop: [
+    "Laptop - Dell XPS 15",
+    "Laptop - MacBook Pro 16",
+    "Laptop - Lenovo ThinkPad"
+  ]
 };
 
 interface BorrowedItem {
@@ -30,7 +39,8 @@ interface BorrowedItem {
   studentNumber: string;
   studentName: string;
   course: string;
-  item: string;
+  collateral: string;
+  items: string[];
   borrowDate: string;
   borrowTime: string;
   status: "Borrowed" | "Returned";
@@ -42,7 +52,8 @@ const borrowedItems: BorrowedItem[] = [
     studentNumber: "2024-12345",
     studentName: "Sarah Chen",
     course: "BS Computer Science",
-    item: "Laptop 5",
+    collateral: "Student ID",
+    items: ["Laptop - Dell XPS 15", "Extension Cable 10m"],
     borrowDate: "Feb 18, 2026",
     borrowTime: "09:15 AM",
     status: "Borrowed",
@@ -52,25 +63,15 @@ const borrowedItems: BorrowedItem[] = [
     studentNumber: "2024-23456",
     studentName: "Emily Rodriguez",
     course: "BS Information Technology",
-    item: "Projector 2",
+    collateral: "Driver's License",
+    items: ["Projector - Epson EB-X41"],
     borrowDate: "Feb 18, 2026",
     borrowTime: "10:30 AM",
-    status: "Borrowed",
-  },
-  {
-    id: "3",
-    studentNumber: "2024-34567",
-    studentName: "David Kim",
-    course: "BS Accountancy",
-    item: "HDMI Cable 3",
-    borrowDate: "Feb 18, 2026",
-    borrowTime: "11:00 AM",
     status: "Borrowed",
   },
 ];
 
 export function TransactionScreen() {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("borrow");
 
   return (
@@ -105,15 +106,17 @@ export function TransactionScreen() {
 }
 
 function BorrowTab() {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     studentNumber: "",
     studentName: "",
     course: "",
-    itemType: "",
-    item: "",
-    otherItem: "",
+    collateral: "",
   });
+  
+  const [borrowedItemsList, setBorrowedItemsList] = useState<{type: string, name: string}[]>([
+    { type: "", name: "" }
+  ]);
+  
   const [submitted, setSubmitted] = useState(false);
 
   const currentDateTime = new Date().toLocaleString("en-US", {
@@ -124,15 +127,38 @@ function BorrowTab() {
     minute: "2-digit",
     hour12: true,
   });
-  const staffName = "Maria Garcia";
+  const staffName = "System Staff";
+
+  const handleItemChange = (index: number, field: "type" | "name", value: string) => {
+    const updatedList = [...borrowedItemsList];
+    updatedList[index] = { ...updatedList[index], [field]: value };
+    if (field === "type") {
+      updatedList[index].name = ""; // Reset name when type changes
+    }
+    setBorrowedItemsList(updatedList);
+  };
+
+  const addItemRow = () => {
+    setBorrowedItemsList([...borrowedItemsList, { type: "", name: "" }]);
+  };
+
+  const removeItemRow = (index: number) => {
+    if (borrowedItemsList.length > 1) {
+      setBorrowedItemsList(borrowedItemsList.filter((_, i) => i !== index));
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const itemName = formData.itemType === "Other" ? formData.otherItem : formData.item;
+    // Validate that all item rows have a selected name
+    if (borrowedItemsList.some(item => !item.name)) {
+      toast.error("Incomplete Form", { description: "Please complete all item selections." });
+      return;
+    }
     
     toast.success("Borrow Request Submitted", {
-      description: `${itemName} has been successfully borrowed by ${formData.studentName}.`,
+      description: `${borrowedItemsList.length} item(s) have been successfully borrowed by ${formData.studentName}.`,
     });
     
     setSubmitted(true);
@@ -142,27 +168,11 @@ function BorrowTab() {
         studentNumber: "",
         studentName: "",
         course: "",
-        itemType: "",
-        item: "",
-        otherItem: "",
+        collateral: "",
       });
-    }, 2000);
+      setBorrowedItemsList([{ type: "", name: "" }]);
+    }, 2500);
   };
-
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev) => {
-      const newData = { ...prev, [field]: value };
-      if (field === "itemType") {
-        newData.item = "";
-        newData.otherItem = "";
-      }
-      return newData;
-    });
-  };
-
-  const availableItems = formData.itemType
-    ? itemCategories[formData.itemType as keyof typeof itemCategories] || []
-    : [];
 
   if (submitted) {
     return (
@@ -171,7 +181,7 @@ function BorrowTab() {
           <Check className="w-10 h-10 text-green-600" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2 tracking-tight">Borrow Request Submitted</h2>
-        <p className="text-gray-500 mb-6">The item has been successfully assigned to the borrower.</p>
+        <p className="text-gray-500 mb-6">The items have been successfully assigned to the borrower.</p>
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 text-sm text-left">
           <div className="text-gray-600 mb-1 font-medium">Return by end of day:</div>
           <div className="text-gray-900 font-semibold text-base">
@@ -218,7 +228,7 @@ function BorrowTab() {
                   id="studentNumber"
                   placeholder="e.g., 2024-12345"
                   value={formData.studentNumber}
-                  onChange={(e) => handleChange("studentNumber", e.target.value)}
+                  onChange={(e) => setFormData({...formData, studentNumber: e.target.value})}
                   className="h-12 px-4 border-gray-200 bg-gray-50 focus:bg-white rounded-xl transition-all"
                   required
                 />
@@ -232,7 +242,7 @@ function BorrowTab() {
                   id="studentName"
                   placeholder="e.g., Juan Dela Cruz"
                   value={formData.studentName}
-                  onChange={(e) => handleChange("studentName", e.target.value)}
+                  onChange={(e) => setFormData({...formData, studentName: e.target.value})}
                   className="h-12 px-4 border-gray-200 bg-gray-50 focus:bg-white rounded-xl transition-all"
                   required
                 />
@@ -246,7 +256,21 @@ function BorrowTab() {
                   id="course"
                   placeholder="e.g., BS Computer Science"
                   value={formData.course}
-                  onChange={(e) => handleChange("course", e.target.value)}
+                  onChange={(e) => setFormData({...formData, course: e.target.value})}
+                  className="h-12 px-4 border-gray-200 bg-gray-50 focus:bg-white rounded-xl transition-all"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="collateral" className="text-gray-700 font-medium text-sm">
+                  Collateral <span className="text-[#DC143C]">*</span>
+                </Label>
+                <Input
+                  id="collateral"
+                  placeholder="e.g., Student ID, Driver's License"
+                  value={formData.collateral}
+                  onChange={(e) => setFormData({...formData, collateral: e.target.value})}
                   className="h-12 px-4 border-gray-200 bg-gray-50 focus:bg-white rounded-xl transition-all"
                   required
                 />
@@ -254,64 +278,66 @@ function BorrowTab() {
             </div>
           </div>
 
-          {/* Item Information */}
+          {/* Items Information */}
           <div>
-            <h3 className="text-base font-semibold text-gray-900 mb-5">Item Information</h3>
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-base font-semibold text-gray-900">Items to Borrow</h3>
+              <Button type="button" variant="outline" size="sm" onClick={addItemRow} className="rounded-lg h-8 text-xs font-medium">
+                <Plus className="w-3 h-3 mr-1.5" />
+                Add Item
+              </Button>
+            </div>
 
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="itemType" className="text-gray-700 font-medium text-sm">
-                  Item Type <span className="text-[#DC143C]">*</span>
-                </Label>
-                <Select value={formData.itemType} onValueChange={(value) => handleChange("itemType", value)} required>
-                  <SelectTrigger className="h-12 border-gray-200 bg-gray-50 rounded-xl">
-                    <SelectValue placeholder="Select item type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Laptop">Laptop</SelectItem>
-                    <SelectItem value="Projector">Projector</SelectItem>
-                    <SelectItem value="HDMI">HDMI Cable</SelectItem>
-                    <SelectItem value="Camera">Camera</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {formData.itemType && formData.itemType !== "Other" && (
-                <div className="space-y-2">
-                  <Label htmlFor="item" className="text-gray-700 font-medium text-sm">
-                    Select Item <span className="text-[#DC143C]">*</span>
-                  </Label>
-                  <Select value={formData.item} onValueChange={(value) => handleChange("item", value)} required>
-                    <SelectTrigger className="h-12 border-gray-200 bg-gray-50 rounded-xl">
-                      <SelectValue placeholder="Choose specific item" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableItems.map((item) => (
-                        <SelectItem key={item} value={item}>
-                          {item}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              {borrowedItemsList.map((itemRow, index) => (
+                <div key={index} className="flex flex-col sm:flex-row gap-3 items-start sm:items-end p-4 border border-gray-100 bg-gray-50/50 rounded-xl relative">
+                  {borrowedItemsList.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeItemRow(index)}
+                      className="absolute -top-2 -right-2 w-7 h-7 bg-white border border-gray-200 rounded-full text-gray-400 hover:text-red-500 hover:border-red-200 shadow-sm z-10"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  )}
+                  
+                  <div className="space-y-2 flex-1 w-full">
+                    <Label className="text-gray-700 font-medium text-xs">Type</Label>
+                    <Select value={itemRow.type} onValueChange={(val) => handleItemChange(index, "type", val)} required>
+                      <SelectTrigger className="h-10 border-gray-200 bg-white rounded-lg">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Equipment">Equipment</SelectItem>
+                        <SelectItem value="Laptop">Laptop</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2 flex-[2] w-full">
+                    <Label className="text-gray-700 font-medium text-xs">Item Name</Label>
+                    <Select 
+                      value={itemRow.name} 
+                      onValueChange={(val) => handleItemChange(index, "name", val)} 
+                      disabled={!itemRow.type}
+                      required
+                    >
+                      <SelectTrigger className="h-10 border-gray-200 bg-white rounded-lg disabled:opacity-50 disabled:bg-gray-50">
+                        <SelectValue placeholder={itemRow.type ? "Choose specific item" : "Select type first"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {itemRow.type && itemTypesData[itemRow.type as keyof typeof itemTypesData]?.map((itemOp) => (
+                          <SelectItem key={itemOp} value={itemOp}>
+                            {itemOp}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-              )}
-
-              {formData.itemType === "Other" && (
-                <div className="space-y-2">
-                  <Label htmlFor="otherItem" className="text-gray-700 font-medium text-sm">
-                    Specify Item <span className="text-[#DC143C]">*</span>
-                  </Label>
-                  <Input
-                    id="otherItem"
-                    placeholder="Enter item name"
-                    value={formData.otherItem}
-                    onChange={(e) => handleChange("otherItem", e.target.value)}
-                    className="h-12 px-4 border-gray-200 bg-gray-50 focus:bg-white rounded-xl transition-all"
-                    required
-                  />
-                </div>
-              )}
+              ))}
             </div>
           </div>
 
@@ -347,7 +373,7 @@ function ReturnTab() {
       item.status === "Borrowed" &&
       (item.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.studentNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.item.toLowerCase().includes(searchQuery.toLowerCase()))
+        item.items.join(" ").toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const handleOpenDetails = (item: BorrowedItem) => {
@@ -360,7 +386,7 @@ function ReturnTab() {
     
     if (returnedItem) {
       toast.success("Return Processed Successfully", {
-        description: `${returnedItem.item} has been returned by ${returnedItem.studentName}.`,
+        description: `Items have been returned by ${returnedItem.studentName}.`,
       });
     }
     
@@ -406,7 +432,7 @@ function ReturnTab() {
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900 text-base mb-1">Return Processed</div>
-                    <div className="text-sm text-gray-600">Item has been returned successfully</div>
+                    <div className="text-sm text-gray-600">Items have been returned successfully</div>
                   </div>
                 </div>
               ) : (
@@ -422,9 +448,13 @@ function ReturnTab() {
                       Click to view
                     </div>
                   </div>
-                  <div className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-100 text-amber-700 mb-3">
-                    <Package className="w-3 h-3 mr-1.5" />
-                    {item.item}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {item.items.map((itemName, idx) => (
+                      <div key={idx} className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-100 text-amber-700">
+                        <Package className="w-3 h-3 mr-1.5" />
+                        {itemName}
+                      </div>
+                    ))}
                   </div>
                   <div className="flex items-center text-xs text-gray-500 font-medium">
                     <Clock className="w-3 h-3 mr-1.5" />
@@ -441,14 +471,14 @@ function ReturnTab() {
             <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Search className="w-8 h-8 text-gray-400" />
             </div>
-            <p className="text-gray-500 font-medium">No borrowed items found.</p>
+            <p className="text-gray-500 font-medium">No borrowed transactions found.</p>
           </Card>
         )}
       </div>
 
       {/* Premium Details Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[420px] rounded-2xl">
+        <DialogContent className="sm:max-w-[420px] rounded-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold tracking-tight">Borrowing Details</DialogTitle>
             <DialogDescription className="text-sm text-gray-500">
@@ -479,21 +509,29 @@ function ReturnTab() {
                     <div className="text-xs text-gray-600 mb-0.5 font-medium">Course</div>
                     <div className="text-sm text-gray-900 font-semibold">{selectedItem.course}</div>
                   </div>
+                  <div>
+                    <div className="text-xs text-gray-600 mb-0.5 font-medium">Collateral</div>
+                    <div className="text-sm text-gray-900 font-semibold bg-white px-2 py-1 rounded border border-gray-100 inline-block">{selectedItem.collateral}</div>
+                  </div>
                 </div>
               </div>
 
-              {/* Item Information */}
+              {/* Items Information */}
               <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/60 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                     <Package className="w-4 h-4 text-amber-600" />
                   </div>
-                  <h3 className="text-sm font-semibold text-gray-900">Item Information</h3>
+                  <h3 className="text-sm font-semibold text-gray-900">Items Information ({selectedItem.items.length})</h3>
                 </div>
-                <div>
-                  <div className="text-xs text-gray-600 mb-0.5 font-medium">Borrowed Item</div>
-                  <div className="text-sm text-gray-900 font-bold">{selectedItem.item}</div>
-                </div>
+                <ul className="space-y-2">
+                  {selectedItem.items.map((itemName, idx) => (
+                    <li key={idx} className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+                      <span className="text-sm text-gray-900 font-semibold">{itemName}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               {/* Time Information */}
@@ -529,7 +567,7 @@ function ReturnTab() {
                   <div>
                     <div className="text-xs font-semibold text-red-900 mb-0.5">Important Reminder</div>
                     <div className="text-xs text-red-700">
-                      Please verify the item condition before processing.
+                      Verify ALL items and return the <b>{selectedItem.collateral}</b>.
                     </div>
                   </div>
                 </div>

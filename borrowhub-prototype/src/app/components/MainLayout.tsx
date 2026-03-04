@@ -1,12 +1,24 @@
 import { Outlet, useNavigate, useLocation } from "react-router";
+import { useState, useEffect } from "react";
 import { 
   Home, 
   Package, 
   ArrowLeftRight,
   FileText,
-  LogOut
+  LogOut,
+  User,
+  Settings,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 import logo from "../../assets/logo.png";
 import { toast } from "sonner";
 
@@ -20,8 +32,19 @@ const navigation = [
 export function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem("borrowHubCurrentUser");
+    if (userStr) {
+      setCurrentUser(JSON.parse(userStr));
+    } else {
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleLogout = () => {
+    localStorage.removeItem("borrowHubCurrentUser");
     navigate("/");
   };
 
@@ -46,16 +69,61 @@ export function MainLayout() {
             <span className="text-lg font-semibold text-gray-900 tracking-tight">BorrowHub</span>
           </div>
           
-          {/* Logout Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleLogout}
-            className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 h-9 px-3 rounded-lg transition-all"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline text-sm">Logout</span>
-          </Button>
+          {/* User Profile Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-10 px-3 flex items-center gap-2 hover:bg-gray-100 rounded-xl"
+              >
+                <div className="w-7 h-7 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center border border-gray-300">
+                  <User className="w-4 h-4 text-gray-600" />
+                </div>
+                <div className="hidden sm:flex flex-col items-start mr-1">
+                  <span className="text-sm font-medium text-gray-900 leading-none">
+                    {currentUser?.name || "User"}
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-medium">
+                    {currentUser?.role || "Staff"}
+                  </span>
+                </div>
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-lg border-gray-200/80">
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none text-gray-900">{currentUser?.name}</p>
+                  <p className="text-xs leading-none text-gray-500">{currentUser?.role}</p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={() => navigate("/app/settings")}
+                className="cursor-pointer gap-2 py-2"
+              >
+                <Settings className="w-4 h-4 text-gray-500" />
+                <span>Account Settings</span>
+              </DropdownMenuItem>
+              {currentUser?.role?.toLowerCase().includes("admin") && (
+                <DropdownMenuItem 
+                  onClick={() => navigate("/app/users")}
+                  className="cursor-pointer gap-2 py-2"
+                >
+                  <User className="w-4 h-4 text-gray-500" />
+                  <span>User Management</span>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={handleLogout}
+                className="cursor-pointer gap-2 py-2 text-red-600 focus:text-red-600 focus:bg-red-50"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 

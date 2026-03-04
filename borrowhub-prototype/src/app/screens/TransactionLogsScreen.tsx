@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -9,124 +10,120 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Search, Download, ArrowLeft } from "lucide-react";
+import { Search, Download, ArrowLeft, FileText, Activity } from "lucide-react";
 import { useNavigate } from "react-router";
-import { FileText } from "lucide-react";
 
-interface Transaction {
+interface LogEntry {
   id: string;
   userId: string;
   userName: string;
-  action: "Borrowed" | "Returned" | "Added" | "Updated";
-  item: string;
+  action: "Borrowed" | "Returned" | "Added" | "Updated" | "Deleted" | "Created User" | "Modified User";
+  details: string;
   dateTime: string;
   performedBy: string;
+  type: "Transaction" | "Activity";
 }
 
-const transactionData: Transaction[] = [
+const logsData: LogEntry[] = [
   {
     id: "1",
     userId: "EMP2045",
     userName: "Sarah Chen",
     action: "Borrowed",
-    item: "Projector - Epson EB-X41",
+    details: "Laptop - Dell XPS 15, Extension Cable 10m",
     dateTime: "Feb 18, 2026 09:15 AM",
-    performedBy: "Admin (John Smith)",
+    performedBy: "Staff (Maria Garcia)",
+    type: "Transaction",
   },
   {
     id: "2",
     userId: "EMP1892",
     userName: "James Miller",
     action: "Returned",
-    item: "Laptop - Dell XPS 15",
+    details: "Laptop - Dell XPS 15",
     dateTime: "Feb 18, 2026 08:45 AM",
-    performedBy: "Admin (John Smith)",
+    performedBy: "Staff (Maria Garcia)",
+    type: "Transaction",
   },
   {
     id: "3",
-    userId: "STU4521",
-    userName: "Emily Rodriguez",
-    action: "Borrowed",
-    item: "Camera - Canon EOS R6",
+    userId: "SYSTEM",
+    userName: "Admin",
+    action: "Added",
+    details: "New Item: HDMI Cable 5m (Qty: 25)",
     dateTime: "Feb 17, 2026 04:30 PM",
-    performedBy: "Staff (Maria Garcia)",
+    performedBy: "Admin (John Smith)",
+    type: "Activity",
   },
   {
     id: "4",
-    userId: "EMP3107",
-    userName: "David Kim",
-    action: "Returned",
-    item: "Whiteboard Marker Set",
+    userId: "SYSTEM",
+    userName: "Admin",
+    action: "Updated",
+    details: "Status change: Portable Speaker -> Maintenance",
     dateTime: "Feb 17, 2026 02:20 PM",
-    performedBy: "Staff (Maria Garcia)",
+    performedBy: "Admin (John Smith)",
+    type: "Activity",
   },
   {
     id: "5",
     userId: "STU3891",
     userName: "Lisa Thompson",
     action: "Borrowed",
-    item: "Conference Room Key - B305",
+    details: "Projector - Epson EB-X41",
     dateTime: "Feb 17, 2026 11:00 AM",
-    performedBy: "Admin (John Smith)",
+    performedBy: "Staff (Maria Garcia)",
+    type: "Transaction",
   },
   {
     id: "6",
     userId: "SYSTEM",
-    userName: "System",
-    action: "Added",
-    item: "HDMI Cable 5m (Qty: 25)",
+    userName: "Admin",
+    action: "Deleted",
+    details: "Removed Item: Old VGA Cable",
     dateTime: "Feb 16, 2026 03:15 PM",
     performedBy: "Admin (John Smith)",
+    type: "Activity",
   },
   {
     id: "7",
     userId: "EMP1523",
     userName: "Michael Brown",
     action: "Borrowed",
-    item: "Wireless Presenter",
+    details: "Wireless Presenter",
     dateTime: "Feb 15, 2026 10:30 AM",
     performedBy: "Staff (Maria Garcia)",
+    type: "Transaction",
   },
   {
     id: "8",
-    userId: "STU2341",
-    userName: "Jessica Lee",
-    action: "Returned",
-    item: "Extension Cable 10m",
-    dateTime: "Feb 15, 2026 09:00 AM",
-    performedBy: "Staff (Maria Garcia)",
-  },
-  {
-    id: "9",
     userId: "SYSTEM",
-    userName: "System",
-    action: "Updated",
-    item: "Portable Speaker (Status: Maintenance)",
-    dateTime: "Feb 14, 2026 04:45 PM",
+    userName: "Admin",
+    action: "Modified User",
+    details: "Reset password for Staff (Maria Garcia)",
+    dateTime: "Feb 15, 2026 09:00 AM",
     performedBy: "Admin (John Smith)",
-  },
-  {
-    id: "10",
-    userId: "EMP4567",
-    userName: "Robert Wilson",
-    action: "Borrowed",
-    item: "Tripod Stand",
-    dateTime: "Feb 14, 2026 01:20 PM",
-    performedBy: "Admin (John Smith)",
+    type: "Activity",
   },
 ];
 
 export function TransactionLogsScreen() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("transaction");
   const [searchQuery, setSearchQuery] = useState("");
   const [actionFilter, setActionFilter] = useState("all");
 
-  const filteredData = transactionData.filter((transaction) => {
+  const filteredData = logsData.filter((log) => {
+    // Filter by Tab
+    if (activeTab === "transaction" && log.type !== "Transaction") return false;
+    if (activeTab === "activity" && log.type !== "Activity") return false;
+
     const matchesSearch =
-      transaction.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      transaction.userId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      transaction.item.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesAction = actionFilter === "all" || transaction.action === actionFilter;
+      log.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      log.userId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      log.details.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesAction = actionFilter === "all" || log.action === actionFilter;
+    
     return matchesSearch && matchesAction;
   });
 
@@ -137,12 +134,38 @@ export function TransactionLogsScreen() {
       case "Returned":
         return "bg-green-50 text-green-700";
       case "Added":
+      case "Created User":
         return "bg-blue-50 text-blue-700";
       case "Updated":
-        return "bg-slate-100 text-slate-700";
+      case "Modified User":
+        return "bg-purple-50 text-purple-700";
+      case "Deleted":
+        return "bg-red-50 text-red-700";
       default:
         return "bg-slate-50 text-slate-700";
     }
+  };
+
+  const getActionOptions = () => {
+    if (activeTab === "transaction") {
+      return (
+        <>
+          <SelectItem value="all">All Actions</SelectItem>
+          <SelectItem value="Borrowed">Borrowed</SelectItem>
+          <SelectItem value="Returned">Returned</SelectItem>
+        </>
+      );
+    }
+    return (
+      <>
+        <SelectItem value="all">All Actions</SelectItem>
+        <SelectItem value="Added">Added</SelectItem>
+        <SelectItem value="Updated">Updated</SelectItem>
+        <SelectItem value="Deleted">Deleted</SelectItem>
+        <SelectItem value="Created User">Created User</SelectItem>
+        <SelectItem value="Modified User">Modified User</SelectItem>
+      </>
+    );
   };
 
   return (
@@ -159,7 +182,7 @@ export function TransactionLogsScreen() {
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">Transaction Logs</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">System Logs</h1>
             <p className="text-gray-500 text-base">Complete audit trail of all activities</p>
           </div>
         </div>
@@ -173,113 +196,124 @@ export function TransactionLogsScreen() {
         </Button>
       </div>
 
-      {/* Premium Filters Card */}
-      <Card className="p-5 border-gray-200/60 shadow-sm hover:shadow-premium transition-all duration-300 rounded-2xl bg-white/80 backdrop-blur-sm">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input
-              placeholder="Search by user, ID, or item..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-11 h-11 border-gray-200 bg-gray-50 focus:bg-white rounded-xl transition-all"
-            />
-          </div>
-          <Select value={actionFilter} onValueChange={setActionFilter}>
-            <SelectTrigger className="sm:w-52 h-11 border-gray-200 bg-gray-50 rounded-xl">
-              <SelectValue placeholder="Filter by action" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Actions</SelectItem>
-              <SelectItem value="Borrowed">Borrowed</SelectItem>
-              <SelectItem value="Returned">Returned</SelectItem>
-              <SelectItem value="Added">Added</SelectItem>
-              <SelectItem value="Updated">Updated</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </Card>
+      <Tabs value={activeTab} onValueChange={(val) => { setActiveTab(val); setActionFilter("all"); }} className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2 h-12 bg-gray-100 p-1 rounded-xl mb-6">
+          <TabsTrigger value="transaction" className="rounded-lg font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <FileText className="w-4 h-4 mr-2" />
+            Transaction Logs
+          </TabsTrigger>
+          <TabsTrigger value="activity" className="rounded-lg font-medium data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <Activity className="w-4 h-4 mr-2" />
+            Activity Logs
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Premium Table Card */}
-      <Card className="border-gray-200/60 overflow-hidden shadow-sm hover:shadow-premium transition-all duration-300 rounded-2xl bg-white/80 backdrop-blur-sm">
-        {/* Desktop Table */}
-        <div className="hidden lg:block overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-              <tr>
-                <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">User</th>
-                <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">Action</th>
-                <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">Item</th>
-                <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">Date & Time</th>
-                <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">Performed By</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredData.map((transaction) => (
-                <tr key={transaction.id} className="hover:bg-gray-50/80 transition-all duration-200 group">
-                  <td className="px-5 py-4">
-                    <div className="text-sm font-medium text-gray-900">{transaction.userName}</div>
-                    <div className="text-xs text-gray-500 font-medium">{transaction.userId}</div>
-                  </td>
-                  <td className="px-5 py-4">
-                    <span
-                      className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium ${getActionColor(
-                        transaction.action
-                      )}`}
-                    >
-                      {transaction.action}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 text-sm font-medium text-gray-900">{transaction.item}</td>
-                  <td className="px-5 py-4 text-sm text-gray-600 font-medium">{transaction.dateTime}</td>
-                  <td className="px-5 py-4 text-sm text-gray-600 font-medium">{transaction.performedBy}</td>
+        {/* Premium Filters Card */}
+        <Card className="p-5 border-gray-200/60 shadow-sm hover:shadow-premium transition-all duration-300 rounded-2xl bg-white/80 backdrop-blur-sm mb-6">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                placeholder="Search logs..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-11 h-11 border-gray-200 bg-gray-50 focus:bg-white rounded-xl transition-all"
+              />
+            </div>
+            <Select value={actionFilter} onValueChange={setActionFilter}>
+              <SelectTrigger className="sm:w-52 h-11 border-gray-200 bg-gray-50 rounded-xl">
+                <SelectValue placeholder="Filter by action" />
+              </SelectTrigger>
+              <SelectContent>
+                {getActionOptions()}
+              </SelectContent>
+            </Select>
+          </div>
+        </Card>
+
+        {/* Premium Table Card */}
+        <Card className="border-gray-200/60 overflow-hidden shadow-sm hover:shadow-premium transition-all duration-300 rounded-2xl bg-white/80 backdrop-blur-sm">
+          {/* Desktop Table */}
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                <tr>
+                  <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">
+                    {activeTab === "transaction" ? "User/Student" : "System User"}
+                  </th>
+                  <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">Action</th>
+                  <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">Details</th>
+                  <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">Date & Time</th>
+                  <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">Performed By</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile/Tablet Cards */}
-        <div className="lg:hidden divide-y divide-gray-100">
-          {filteredData.map((transaction) => (
-            <div key={transaction.id} className="p-5 hover:bg-gray-50/80 transition-all duration-200">
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-gray-900 mb-1">{transaction.userName}</div>
-                  <div className="text-xs text-gray-500 font-medium">{transaction.userId}</div>
-                </div>
-                <span
-                  className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium ${getActionColor(
-                    transaction.action
-                  )}`}
-                >
-                  {transaction.action}
-                </span>
-              </div>
-              <div className="text-sm font-medium text-gray-900 mb-3">{transaction.item}</div>
-              <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
-                <span>{transaction.dateTime}</span>
-                <span>•</span>
-                <span>{transaction.performedBy}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {filteredData.length === 0 && (
-          <div className="p-16 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <FileText className="w-8 h-8 text-gray-400" />
-            </div>
-            <p className="text-gray-500 font-medium">No transactions found matching your criteria.</p>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filteredData.map((log) => (
+                  <tr key={log.id} className="hover:bg-gray-50/80 transition-all duration-200 group">
+                    <td className="px-5 py-4">
+                      <div className="text-sm font-medium text-gray-900">{log.userName}</div>
+                      <div className="text-xs text-gray-500 font-medium">{log.userId}</div>
+                    </td>
+                    <td className="px-5 py-4">
+                      <span
+                        className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium ${getActionColor(
+                          log.action
+                        )}`}
+                      >
+                        {log.action}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 text-sm font-medium text-gray-900">{log.details}</td>
+                    <td className="px-5 py-4 text-sm text-gray-600 font-medium">{log.dateTime}</td>
+                    <td className="px-5 py-4 text-sm text-gray-600 font-medium">{log.performedBy}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
-      </Card>
 
-      {/* Results Count */}
-      <div className="flex items-center justify-between text-sm text-gray-500 px-1">
-        <span className="font-medium">Showing {filteredData.length} of {transactionData.length} transactions</span>
-      </div>
+          {/* Mobile/Tablet Cards */}
+          <div className="lg:hidden divide-y divide-gray-100">
+            {filteredData.map((log) => (
+              <div key={log.id} className="p-5 hover:bg-gray-50/80 transition-all duration-200">
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-gray-900 mb-1">{log.userName}</div>
+                    <div className="text-xs text-gray-500 font-medium">{log.userId}</div>
+                  </div>
+                  <span
+                    className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium ${getActionColor(
+                      log.action
+                    )}`}
+                  >
+                    {log.action}
+                  </span>
+                </div>
+                <div className="text-sm font-medium text-gray-900 mb-3">{log.details}</div>
+                <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
+                  <span>{log.dateTime}</span>
+                  <span>•</span>
+                  <span>{log.performedBy}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {filteredData.length === 0 && (
+            <div className="p-16 text-center">
+              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-8 h-8 text-gray-400" />
+              </div>
+              <p className="text-gray-500 font-medium">No logs found matching your criteria.</p>
+            </div>
+          )}
+        </Card>
+
+        {/* Results Count */}
+        <div className="flex items-center justify-between text-sm text-gray-500 px-1 mt-6">
+          <span className="font-medium">Showing {filteredData.length} records</span>
+        </div>
+      </Tabs>
     </div>
   );
 }

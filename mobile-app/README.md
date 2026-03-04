@@ -13,6 +13,8 @@
 
 ## Features
 
+[TO BE CONTINUE; finalize features, paganahin muna yung borrowhub-prototype tas don gumawa ng changes at mag finalize bago iupdate ito]
+
 - **Borrow Request Management** — Submit, review, and approve borrowing requests
 - **Item Tracking** — Monitor the status and availability of borrowable items in real time
 - **Return Monitoring** — Track return dates and flag overdue items
@@ -21,6 +23,7 @@
 - **Notifications & Alerts** — Receive reminders for upcoming and overdue returns
 - **Reports & Logs** — View and export borrowing history and summaries
 - **Role-Based Access** — Separate access levels for MIS Staff and CSD Staff
+
 
 ---
 

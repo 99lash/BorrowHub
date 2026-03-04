@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -11,13 +11,30 @@ export function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  useEffect(() => {
+    // Initialize default users if not present
+    const users = localStorage.getItem("borrowHubUsers");
+    if (!users) {
+      const defaultUsers = [
+        { username: "admin", name: "Admin User", role: "MIS/CSD Admin", password: "123" },
+        { username: "staff", name: "Staff User", role: "MIS/CSD Staff", password: "123" }
+      ];
+      localStorage.setItem("borrowHubUsers", JSON.stringify(defaultUsers));
+    }
+  }, []);
+
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate credentials
-    if (username === "user" && password === "123") {
+    const usersStr = localStorage.getItem("borrowHubUsers");
+    const users = usersStr ? JSON.parse(usersStr) : [];
+    
+    const user = users.find((u: any) => u.username === username && u.password === password);
+
+    if (user) {
+      localStorage.setItem("borrowHubCurrentUser", JSON.stringify(user));
       toast.success("Login Successful", {
-        description: "Welcome to BorrowHub!",
+        description: `Welcome to BorrowHub, ${user.name}!`,
       });
       setTimeout(() => {
         navigate("/app");
@@ -53,7 +70,7 @@ export function LoginScreen() {
               <Input
                 id="username"
                 type="text"
-                placeholder="Enter your username"
+                placeholder="Enter your username (admin / staff)"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="h-12 px-4 bg-gray-50 border-gray-200 rounded-xl focus:bg-white focus:border-[#DC143C] focus:ring-2 focus:ring-[#DC143C]/20 transition-all"
@@ -68,7 +85,7 @@ export function LoginScreen() {
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Enter your password (123)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-12 px-4 bg-gray-50 border-gray-200 rounded-xl focus:bg-white focus:border-[#DC143C] focus:ring-2 focus:ring-[#DC143C]/20 transition-all"

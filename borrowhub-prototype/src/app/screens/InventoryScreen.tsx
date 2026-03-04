@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -11,14 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Package } from "lucide-react";
 import { toast } from "sonner";
-import { Package } from "lucide-react";
 
 interface InventoryItem {
   id: string;
   name: string;
-  category: string;
+  type: string;
   status: "Available" | "Borrowed" | "Maintenance";
   quantity: number;
   available: number;
@@ -28,7 +27,7 @@ const inventoryData: InventoryItem[] = [
   {
     id: "1",
     name: "Projector - Epson EB-X41",
-    category: "Electronics",
+    type: "Equipment",
     status: "Available",
     quantity: 12,
     available: 9,
@@ -36,7 +35,7 @@ const inventoryData: InventoryItem[] = [
   {
     id: "2",
     name: "Laptop - Dell XPS 15",
-    category: "Electronics",
+    type: "Laptop",
     status: "Borrowed",
     quantity: 20,
     available: 14,
@@ -44,31 +43,31 @@ const inventoryData: InventoryItem[] = [
   {
     id: "3",
     name: "Camera - Canon EOS R6",
-    category: "Electronics",
+    type: "Equipment",
     status: "Available",
     quantity: 5,
     available: 3,
   },
   {
     id: "4",
-    name: "Whiteboard Marker Set",
-    category: "Office Supplies",
+    name: "Laptop - MacBook Pro 16",
+    type: "Laptop",
     status: "Available",
-    quantity: 50,
-    available: 50,
+    quantity: 10,
+    available: 10,
   },
   {
     id: "5",
-    name: "Conference Room Key - B305",
-    category: "Access Control",
+    name: "Conference Microphone",
+    type: "Equipment",
     status: "Borrowed",
-    quantity: 1,
+    quantity: 4,
     available: 0,
   },
   {
     id: "6",
     name: "Extension Cable 10m",
-    category: "Electronics",
+    type: "Equipment",
     status: "Available",
     quantity: 30,
     available: 28,
@@ -76,7 +75,7 @@ const inventoryData: InventoryItem[] = [
   {
     id: "7",
     name: "Wireless Presenter",
-    category: "Electronics",
+    type: "Equipment",
     status: "Available",
     quantity: 8,
     available: 6,
@@ -84,7 +83,7 @@ const inventoryData: InventoryItem[] = [
   {
     id: "8",
     name: "Portable Speaker",
-    category: "Electronics",
+    type: "Equipment",
     status: "Maintenance",
     quantity: 4,
     available: 2,
@@ -92,7 +91,7 @@ const inventoryData: InventoryItem[] = [
   {
     id: "9",
     name: "Tripod Stand",
-    category: "Equipment",
+    type: "Equipment",
     status: "Available",
     quantity: 6,
     available: 5,
@@ -100,7 +99,7 @@ const inventoryData: InventoryItem[] = [
   {
     id: "10",
     name: "HDMI Cable 5m",
-    category: "Electronics",
+    type: "Equipment",
     status: "Available",
     quantity: 25,
     available: 25,
@@ -108,20 +107,30 @@ const inventoryData: InventoryItem[] = [
 ];
 
 export function InventoryScreen() {
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newItem, setNewItem] = useState({
     name: "",
-    category: "",
+    type: "",
     quantity: "",
     available: "",
   });
 
+  useEffect(() => {
+    const userStr = localStorage.getItem("borrowHubCurrentUser");
+    if (userStr) {
+      setCurrentUser(JSON.parse(userStr));
+    }
+  }, []);
+
+  const isAdmin = currentUser?.role?.toLowerCase().includes("admin");
+
   const filteredData = inventoryData.filter((item) => {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || item.category === categoryFilter;
-    return matchesSearch && matchesCategory;
+    const matchesType = typeFilter === "all" || item.type === typeFilter;
+    return matchesSearch && matchesType;
   });
 
   const getStatusColor = (status: string) => {
@@ -143,7 +152,13 @@ export function InventoryScreen() {
       description: `${newItem.name} has been added to inventory.`,
     });
     setIsDialogOpen(false);
-    setNewItem({ name: "", category: "", quantity: "", available: "" });
+    setNewItem({ name: "", type: "", quantity: "", available: "" });
+  };
+
+  const handleDelete = (name: string) => {
+    toast.success("Item Deleted", {
+      description: `${name} has been removed from inventory.`,
+    });
   };
 
   return (
@@ -154,13 +169,15 @@ export function InventoryScreen() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">Inventory Management</h1>
           <p className="text-gray-500 text-base">Manage and track all resources</p>
         </div>
-        <Button 
-          className="bg-gradient-to-br from-black to-gray-800 hover:from-gray-800 hover:to-gray-900 sm:w-auto rounded-xl shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-all duration-300 h-11 px-5 font-medium" 
-          onClick={() => setIsDialogOpen(true)}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Item
-        </Button>
+        {isAdmin && (
+          <Button 
+            className="bg-gradient-to-br from-black to-gray-800 hover:from-gray-800 hover:to-gray-900 sm:w-auto rounded-xl shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-all duration-300 h-11 px-5 font-medium" 
+            onClick={() => setIsDialogOpen(true)}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Item
+          </Button>
+        )}
       </div>
 
       {/* Premium Filters Card */}
@@ -175,16 +192,14 @@ export function InventoryScreen() {
               className="pl-11 h-11 border-gray-200 bg-gray-50 focus:bg-white rounded-xl transition-all"
             />
           </div>
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="sm:w-52 h-11 border-gray-200 bg-gray-50 rounded-xl">
-              <SelectValue placeholder="Filter by category" />
+              <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="Electronics">Electronics</SelectItem>
-              <SelectItem value="Office Supplies">Office Supplies</SelectItem>
+              <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="Equipment">Equipment</SelectItem>
-              <SelectItem value="Access Control">Access Control</SelectItem>
+              <SelectItem value="Laptop">Laptop</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -198,17 +213,18 @@ export function InventoryScreen() {
             <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
               <tr>
                 <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">Item Name</th>
-                <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">Category</th>
+                <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">Type</th>
                 <th className="text-left px-5 py-4 text-sm font-semibold text-gray-700">Status</th>
                 <th className="text-right px-5 py-4 text-sm font-semibold text-gray-700">Available</th>
                 <th className="text-right px-5 py-4 text-sm font-semibold text-gray-700">Total</th>
+                {isAdmin && <th className="text-right px-5 py-4 text-sm font-semibold text-gray-700">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filteredData.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50/80 transition-all duration-200 group">
                   <td className="px-5 py-4 text-sm font-medium text-gray-900">{item.name}</td>
-                  <td className="px-5 py-4 text-sm text-gray-600">{item.category}</td>
+                  <td className="px-5 py-4 text-sm text-gray-600">{item.type}</td>
                   <td className="px-5 py-4">
                     <span
                       className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium ${getStatusColor(
@@ -220,6 +236,18 @@ export function InventoryScreen() {
                   </td>
                   <td className="px-5 py-4 text-sm font-semibold text-gray-900 text-right">{item.available}</td>
                   <td className="px-5 py-4 text-sm text-gray-600 text-right">{item.quantity}</td>
+                  {isAdmin && (
+                    <td className="px-5 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleDelete(item.name)} className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -240,15 +268,27 @@ export function InventoryScreen() {
                   {item.status}
                 </span>
               </div>
-              <div className="text-xs text-gray-500 mb-3 font-medium">{item.category}</div>
-              <div className="flex items-center gap-4 text-xs">
-                <span className="text-gray-600">
-                  Available: <span className="text-gray-900 font-semibold">{item.available}</span>
-                </span>
-                <span className="text-gray-300">•</span>
-                <span className="text-gray-600">
-                  Total: <span className="text-gray-900 font-semibold">{item.quantity}</span>
-                </span>
+              <div className="text-xs text-gray-500 mb-3 font-medium">{item.type}</div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4 text-xs">
+                  <span className="text-gray-600">
+                    Available: <span className="text-gray-900 font-semibold">{item.available}</span>
+                  </span>
+                  <span className="text-gray-300">•</span>
+                  <span className="text-gray-600">
+                    Total: <span className="text-gray-900 font-semibold">{item.quantity}</span>
+                  </span>
+                </div>
+                {isAdmin && (
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-blue-600">
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(item.name)} className="h-8 w-8 p-0 text-red-600">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -287,37 +327,44 @@ export function InventoryScreen() {
                 onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
                 className="h-11 border-gray-200 bg-gray-50 focus:bg-white rounded-xl"
                 placeholder="e.g., Laptop - Dell XPS 15"
+                required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="category" className="text-gray-700 font-medium">Category</Label>
-              <Input
-                id="category"
-                value={newItem.category}
-                onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
-                className="h-11 border-gray-200 bg-gray-50 focus:bg-white rounded-xl"
-                placeholder="e.g., Electronics"
-              />
+              <Label htmlFor="type" className="text-gray-700 font-medium">Type</Label>
+              <Select value={newItem.type} onValueChange={(val) => setNewItem({ ...newItem, type: val })} required>
+                <SelectTrigger className="h-11 border-gray-200 bg-gray-50 rounded-xl">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Equipment">Equipment</SelectItem>
+                  <SelectItem value="Laptop">Laptop</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="quantity" className="text-gray-700 font-medium">Quantity</Label>
                 <Input
                   id="quantity"
+                  type="number"
                   value={newItem.quantity}
                   onChange={(e) => setNewItem({ ...newItem, quantity: e.target.value })}
                   className="h-11 border-gray-200 bg-gray-50 focus:bg-white rounded-xl"
                   placeholder="0"
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="available" className="text-gray-700 font-medium">Available</Label>
                 <Input
                   id="available"
+                  type="number"
                   value={newItem.available}
                   onChange={(e) => setNewItem({ ...newItem, available: e.target.value })}
                   className="h-11 border-gray-200 bg-gray-50 focus:bg-white rounded-xl"
                   placeholder="0"
+                  required
                 />
               </div>
             </div>
