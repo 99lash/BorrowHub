@@ -56,6 +56,28 @@ export function BorrowItemScreen() {
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => {
       const newData = { ...prev, [field]: value };
+      
+      if (field === "studentNumber") {
+        try {
+          const studentsStr = localStorage.getItem("borrowHubStudents");
+          const coursesStr = localStorage.getItem("borrowHubCourses");
+          if (studentsStr && coursesStr) {
+            const students = JSON.parse(studentsStr);
+            const courses = JSON.parse(coursesStr);
+            const foundStudent = students.find((s: any) => s.student_id === value.trim());
+            if (foundStudent) {
+              newData.studentName = foundStudent.name;
+              const foundCourse = courses.find((c: any) => c.id === foundStudent.course_id);
+              if (foundCourse) {
+                newData.course = foundCourse.name;
+              }
+            }
+          }
+        } catch (e) {
+          console.error("Error parsing student data", e);
+        }
+      }
+
       // Reset item selection when type changes
       if (field === "itemType") {
         newData.item = "";

@@ -6,6 +6,7 @@ import { TransactionScreen } from "./screens/TransactionScreen";
 import { TransactionLogsScreen } from "./screens/TransactionLogsScreen";
 import { AccountSettingsScreen } from "./screens/AccountSettingsScreen";
 import { UserManagementScreen } from "./screens/UserManagementScreen";
+import { StudentManagementScreen } from "./screens/StudentManagementScreen";
 import { MainLayout } from "./components/MainLayout";
 
 export const router = createBrowserRouter([
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
       { path: "logs", Component: TransactionLogsScreen },
       { path: "settings", Component: AccountSettingsScreen },
       { path: "users", Component: UserManagementScreen },
+      { path: "students", Component: StudentManagementScreen },
       { path: "*", element: <Navigate to="/app" replace /> },
     ],
   },

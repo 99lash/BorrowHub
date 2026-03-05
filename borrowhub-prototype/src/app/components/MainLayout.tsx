@@ -8,7 +8,8 @@ import {
   LogOut,
   User,
   Settings,
-  ChevronDown
+  ChevronDown,
+  GraduationCap
 } from "lucide-react";
 import { Button } from "./ui/button";
 import {
@@ -106,13 +107,22 @@ export function MainLayout() {
                 <span>Account Settings</span>
               </DropdownMenuItem>
               {currentUser?.role?.toLowerCase().includes("admin") && (
-                <DropdownMenuItem 
-                  onClick={() => navigate("/app/users")}
-                  className="cursor-pointer gap-2 py-2"
-                >
-                  <User className="w-4 h-4 text-gray-500" />
-                  <span>User Management</span>
-                </DropdownMenuItem>
+                <>
+                  <DropdownMenuItem 
+                    onClick={() => navigate("/app/users")}
+                    className="cursor-pointer gap-2 py-2"
+                  >
+                    <User className="w-4 h-4 text-gray-500" />
+                    <span>User Management</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => navigate("/app/students")}
+                    className="cursor-pointer gap-2 py-2"
+                  >
+                    <GraduationCap className="w-4 h-4 text-gray-500" />
+                    <span>Student Management</span>
+                  </DropdownMenuItem>
+                </>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem 
