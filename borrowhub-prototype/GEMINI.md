@@ -27,3 +27,4 @@ To work with this project, ensure you have Node.js installed. You can use standa
 - **Routing:** Navigation and route configuration are handled by `react-router` in `src/app/routes.tsx`.
 - **Styling:** The project utilizes **Tailwind CSS** for styling. Core styles and themes are defined in the `src/styles/` directory.
 - **Path Aliasing:** The `@/` alias is set up in `vite.config.ts` to map directly to the `src/` directory, simplifying imports.
+- **Feature Documentation:** Always refer to `docs/features.md` for the authoritative list of all modules and functional deliverables in this prototype.
