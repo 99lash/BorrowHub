@@ -24,6 +24,7 @@ The **backend-api** is the engine that powers the BorrowHub system. It manages d
     - Copy `.env.example` to `.env`.
     - Set your MySQL database credentials in `.env`.
     - Generate an app key: `php artisan key:generate`.
+    > **Note:** Ensure your local MySQL server (e.g., XAMPP) is running and the credentials are correct before proceeding to the next step.
 4.  **Run migrations:**
     ```bash
     php artisan migrate
