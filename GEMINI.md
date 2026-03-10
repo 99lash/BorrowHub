@@ -1,30 +1,31 @@
 # BorrowHub Project Guide (Monorepo)
 
-This is the central guide for the **BorrowHub** project. This repository is structured as a **monorepo**, containing both the Android mobile application and the Laravel backend API.
+This is the central guide for the **BorrowHub** project. This repository is structured as a **monorepo**, containing the Android mobile application, the Laravel backend API, and a functional prototype.
 
 ## Repository Structure
 
-- **`mobile-app/`**: Android application (Java, MVVM, Room).
+- **`mobile-app/`**: Android application (Java, MVVM + Repository Pattern, Room).
   - Use `mobile-app/GEMINI.md` for specific app guidance.
   - Architecture: `mobile-app/docs/ARCHITECTURE.md`.
-- **`backend-api/`**: Laravel Backend API (PHP, MySQL, Service-Repository Pattern).
+- **`backend-api/`**: Laravel Backend API (MVC + Service-Repository Pattern, MySQL, Laravel Sanctum).
   - Architecture: `backend-api/docs/ARCHITECTURE.md`.
+- **`borrowhub-prototype/`**: Web-based Prototype (React, Vite, Tailwind CSS).
+  - Use `borrowhub-prototype/GEMINI.md` for design/UI guidance.
 - **`docs/`**: Shared documentation.
-  - Contribution guidelines: `docs/CONTRIBUTING.md`.
 - **`.github/`**: Repository-wide Issue and PR templates.
 
 ## Architectural Context
 
 BorrowHub follows a **Network-First (with Local Caching)** approach:
-1.  **Mobile App:** Uses **Retrofit** to communicate with the Laravel API.
-2.  **Local Storage:** Uses **Room** in the Android app as a cache for offline support.
-3.  **Backend:** Laravel manages central data persistence in **MySQL** and handles authentication/authorization.
+1.  **Mobile App:** Built with **Java** using **MVVM + Repository Pattern**. Uses **Retrofit** to communicate with the API and **Room** for local caching.
+2.  **Backend:** Built with **Laravel** using **MVC + Service-Repository Pattern**. Uses **MySQL** for persistence and **Laravel Sanctum** for secure API authentication.
 
 ## Instructions for Gemini CLI
 
 - **Working on Mobile:** Focus on the `mobile-app/` directory. Ensure the `Repository` and `ApiService` layers match the backend definitions.
 - **Working on Backend:** Focus on the `backend-api/` directory. Adhere strictly to the **Service-Repository Pattern** (do not write business logic or DB queries in controllers). Always use Form Requests for validation and API Resources for JSON responses.
 - **Cross-Project Changes:** When adding a new feature (e.g., "Add Item"), implement the API endpoint first, then the mobile integration.
+- **Design Reference:** Refer to `borrowhub-prototype/` for UI/UX specifications when implementing mobile screens.
 
 ## Development Workflow
 
