@@ -5,6 +5,11 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+  pull_request_review:
+    types: [submitted]
+  pull_request_review_comment:
+    types: [created, edited, deleted]
 
 jobs:
   # Job 1: Check what parts of the monorepo have changed
@@ -84,10 +89,47 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
-  # Job 4: A single status check that succeeds if all required jobs pass or are skipped
+  # Job 4: Check if all PR conversations (including from gemini-code-assist) are resolved
+  check-review-resolution:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for unresolved conversations
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          if [ -z "$PR_NUMBER" ]; then
+            PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
+          fi
+          
+          echo "Checking PR #$PR_NUMBER for unresolved review conversations..."
+          
+          # Use GraphQL to find unresolved threads (more reliable for all review types)
+          UNRESOLVED_COUNT=$(gh api graphql -F owner="${{ github.repository_owner }}" -F repo="${{ github.event.repository.name }}" -F pr="$PR_NUMBER" -f query='
+            query($owner:String!, $repo:String!, $pr:Int!) {
+              repository(owner:$owner, name:$repo) {
+                pullRequest(number:$pr) {
+                  reviewThreads(first: 100) {
+                    nodes {
+                      isResolved
+                    }
+                  }
+                }
+              }
+            }' --jq '.data.repository.pullRequest.reviewThreads.nodes | map(select(.isResolved == false)) | length')
+          
+          if [ "$UNRESOLVED_COUNT" -gt 0 ]; then
+            echo "Error: There are $UNRESOLVED_COUNT unresolved review threads."
+            echo "All conversations (including those from gemini-code-assist) must be resolved before merging."
+            exit 1
+          fi
+          echo "All review conversations are resolved."
+
+  # Job 5: A single status check that succeeds if all required jobs pass or are skipped
   # This is the ONLY job that should be marked as "Required" in Branch Protection
   ci-status-check:
-    needs: [detect-changes, laravel-tests, android-build-and-test]
+    needs: [detect-changes, laravel-tests, android-build-and-test, check-review-resolution]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -108,5 +150,14 @@ jobs:
             echo "Android tests failed or were cancelled."
             exit 1
           fi
+          
+          # Check review resolution only for PR-related events
+          if [[ "${{ github.event_name }}" != "push" ]]; then
+            if [[ "${{ needs.check-review-resolution.result }}" == "failure" || "${{ needs.check-review-resolution.result }}" == "cancelled" ]]; then
+              echo "Review resolution check failed or was cancelled. Please resolve all conversations (including from gemini-code-assist)."
+              exit 1
+            fi
+          fi
+          
           echo "All required tests passed or were correctly skipped."
           exit 0

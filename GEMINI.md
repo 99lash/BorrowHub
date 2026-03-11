@@ -1,5 +1,7 @@
 # BorrowHub Project Guide (Monorepo)
 
+**GitHub Repository:** [99lash/BorrowHub](https://github.com/99lash/BorrowHub)
+
 This is the central guide for the **BorrowHub** project. This repository is structured as a **monorepo**, containing the Android mobile application, the Laravel backend API, and a functional prototype.
 
 ## Repository Structure
