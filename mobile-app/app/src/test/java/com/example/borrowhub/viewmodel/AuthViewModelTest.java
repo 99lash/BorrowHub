@@ -44,6 +44,12 @@ public class AuthViewModelTest {
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.openMocks(this);
+        
+        when(mockApplication.getString(com.example.borrowhub.R.string.error_empty_fields))
+                .thenReturn("Username and password cannot be empty");
+        when(mockApplication.getString(com.example.borrowhub.R.string.login_failed))
+                .thenReturn("Invalid Credentials: Username or password is incorrect.");
+
         authViewModel = new AuthViewModel(mockApplication, mockUserRepository);
 
         authViewModel.getIsLoading().observeForever(mockIsLoadingObserver);

@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.MediatorLiveData;
 
 import com.example.borrowhub.repository.UserRepository;
 
@@ -35,24 +36,23 @@ public class AuthViewModel extends AndroidViewModel {
 
     public LiveData<Boolean> login(String username, String password) {
         if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
-            errorMessage.setValue("Username and password cannot be empty");
-            MutableLiveData<Boolean> errorResult = new MutableLiveData<>(false);
-            return errorResult;
+            errorMessage.setValue(getApplication().getString(com.example.borrowhub.R.string.error_empty_fields));
+            return new MutableLiveData<>(false);
         }
 
         isLoading.setValue(true);
         LiveData<Boolean> repoResult = userRepository.login(username, password);
 
-        // We wrap the repository result to handle loading state
-        MutableLiveData<Boolean> finalResult = new MutableLiveData<>();
+        // We wrap the repository result to handle loading state and error messages
+        MediatorLiveData<Boolean> finalResult = new MediatorLiveData<>();
         
-        // This is a simple way to observe the repoResult once and update states
-        repoResult.observeForever(success -> {
-            isLoading.postValue(false);
-            if (!success) {
-                errorMessage.postValue("Invalid Credentials: Username or password is incorrect.");
+        finalResult.addSource(repoResult, success -> {
+            isLoading.setValue(false);
+            if (Boolean.FALSE.equals(success)) {
+                errorMessage.setValue(getApplication().getString(com.example.borrowhub.R.string.login_failed));
             }
-            finalResult.postValue(success);
+            finalResult.setValue(success);
+            finalResult.removeSource(repoResult);
         });
 
         return finalResult;
