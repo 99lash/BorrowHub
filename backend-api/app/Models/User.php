@@ -47,4 +47,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function borrowRecords()
+    {
+        return $this->hasMany(BorrowRecord::class, 'staff_id');
+    }
+
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class, 'actor_id');
+    }
 }
