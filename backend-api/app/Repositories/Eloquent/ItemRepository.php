@@ -69,4 +69,5 @@ class ItemRepository implements ItemRepositoryInterface
         $item->increment('available_quantity', $quantity);
         return $item;
     }
+
 }
