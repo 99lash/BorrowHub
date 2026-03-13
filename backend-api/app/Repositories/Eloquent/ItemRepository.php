@@ -49,4 +49,18 @@ class ItemRepository implements ItemRepositoryInterface
         $item = $this->findById($id);
         return $item->delete();
     }
+
+    public function decrementAvailableQuantity(int $id, int $quantity)
+    {
+        $item = Item::findOrFail($id);
+        $item->decrement('available_quantity', $quantity);
+        return $item;
+    }
+
+    public function incrementAvailableQuantity(int $id, int $quantity)
+    {
+        $item = Item::findOrFail($id);
+        $item->increment('available_quantity', $quantity);
+        return $item;
+    }
 }

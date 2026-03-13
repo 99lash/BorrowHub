@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ItemController;
+use App\Http\Controllers\Api\V1\StudentController;
+use App\Http\Controllers\Api\V1\TransactionController;
 
 Route::prefix('v1')->group(function () {
     // Public routes
@@ -18,5 +20,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/categories', [CategoryController::class, 'index']);
         
         Route::apiResource('items', ItemController::class);
+
+        Route::get('/students/{student_number}', [StudentController::class, 'show']);
+        Route::post('/transactions/borrow', [TransactionController::class, 'borrow']);
     });
 });
