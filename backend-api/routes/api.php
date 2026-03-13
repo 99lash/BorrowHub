@@ -21,7 +21,9 @@ Route::prefix('v1')->group(function () {
         
         Route::apiResource('items', ItemController::class);
 
-        Route::get('/students/{student_number}', [StudentController::class, 'show']);
+        // Student Management Routes
+        Route::post('/students/import', [StudentController::class, 'import']);
+        Route::apiResource('students', StudentController::class);
         
         // Transaction Routes
         Route::get('/transactions/active', [TransactionController::class, 'index']);
