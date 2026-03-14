@@ -27,14 +27,13 @@
             android:orientation="vertical"
             android:padding="32dp">
 
-            <!-- Logo Section -->
             <ImageView
                 android:id="@+id/iv_logo"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="16dp"
-                android:src="@mipmap/ic_launcher"
+                android:src="@drawable/logo"
                 android:contentDescription="@string/app_name" />
 
             <TextView
