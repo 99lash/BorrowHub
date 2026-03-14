@@ -27,17 +27,15 @@ class DashboardTest extends TestCase
 
         $this->user = User::factory()->create();
 
-        $this->category = Category::create([
+        $this->category = Category::factory()->create([
             'name' => 'Laptops',
-            'description' => 'Laptop computers',
         ]);
 
-        $this->course = Course::create([
-            'code' => 'BSCS',
-            'name' => 'Computer Science',
+        $this->course = Course::factory()->create([
+            'name' => 'BSCS',
         ]);
 
-        $this->student = Student::create([
+        $this->student = Student::factory()->create([
             'student_number' => '2023-00001',
             'name' => 'John Doe',
             'course_id' => $this->course->id,
@@ -53,7 +51,7 @@ class DashboardTest extends TestCase
     public function test_authenticated_user_can_access_dashboard_and_get_correct_stats()
     {
         // Create items
-        $item1 = Item::create([
+        $item1 = Item::factory()->create([
             'name' => 'Laptop A',
             'category_id' => $this->category->id,
             'total_quantity' => 10,
@@ -61,7 +59,7 @@ class DashboardTest extends TestCase
             'status' => 'active',
         ]);
 
-        $item2 = Item::create([
+        $item2 = Item::factory()->create([
             'name' => 'Laptop B',
             'category_id' => $this->category->id,
             'total_quantity' => 5,
@@ -70,7 +68,7 @@ class DashboardTest extends TestCase
         ]);
 
         // Create a borrow record
-        $record = BorrowRecord::create([
+        $record = BorrowRecord::factory()->create([
             'student_id' => $this->student->id,
             'staff_id' => $this->user->id,
             'collateral' => 'Student ID',
@@ -82,7 +80,7 @@ class DashboardTest extends TestCase
         $record->items()->attach($item1->id, ['quantity' => 2]);
 
         // Create another record due tomorrow
-        $record2 = BorrowRecord::create([
+        $record2 = BorrowRecord::factory()->create([
             'student_id' => $this->student->id,
             'staff_id' => $this->user->id,
             'collateral' => 'Driver License',
@@ -107,15 +105,13 @@ class DashboardTest extends TestCase
                     'recent_transactions' => [
                         '*' => [
                             'id',
-                            'student_name',
-                            'student_number',
+                            'student' => ['id', 'name', 'student_number'],
                             'items' => [
-                                '*' => ['name', 'quantity']
+                                '*' => ['id', 'name']
                             ],
                             'status',
                             'borrowed_at',
                             'due_at',
-                            'returned_at'
                         ]
                     ]
                 ]

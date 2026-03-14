@@ -2,12 +2,17 @@
 
 namespace App\Services;
 
-use App\Models\Item;
-use App\Models\BorrowRecord;
-use Illuminate\Support\Carbon;
+use App\Repositories\Interfaces\DashboardRepositoryInterface;
 
 class DashboardService
 {
+    protected $dashboardRepository;
+
+    public function __construct(DashboardRepositoryInterface $dashboardRepository)
+    {
+        $this->dashboardRepository = $dashboardRepository;
+    }
+
     /**
      * Get the dashboard statistics.
      *
@@ -15,46 +20,19 @@ class DashboardService
      */
     public function getDashboardStats(): array
     {
-        $totalItems = Item::sum('total_quantity');
-        $availableNow = Item::sum('available_quantity');
+        $totalItems = $this->dashboardRepository->getTotalItems();
+        $availableNow = $this->dashboardRepository->getAvailableItems();
+        $currentlyBorrowed = $this->dashboardRepository->getCurrentlyBorrowedCount();
+        $dueTodayCount = $this->dashboardRepository->getDueTodayCount();
 
-        // Sum the borrowed quantities from active borrow records
-        $currentlyBorrowed = BorrowRecord::where('status', 'borrowed')
-            ->join('borrow_record_items', 'borrow_records.id', '=', 'borrow_record_items.borrow_record_id')
-            ->sum('borrow_record_items.quantity');
-
-        $dueTodayCount = BorrowRecord::where('status', 'borrowed')
-            ->whereDate('due_at', Carbon::today())
-            ->count();
-
-        // Let's get recent transactions as well, similar to feature docs requirement
-        $recentTransactions = BorrowRecord::with(['student', 'items'])
-            ->orderBy('created_at', 'desc')
-            ->take(5)
-            ->get();
+        $recentTransactions = $this->dashboardRepository->getRecentTransactions(5);
 
         return [
-            'total_items' => (int) $totalItems,
-            'currently_borrowed' => (int) $currentlyBorrowed,
-            'available_now' => (int) $availableNow,
+            'total_items' => $totalItems,
+            'currently_borrowed' => $currentlyBorrowed,
+            'available_now' => $availableNow,
             'due_today' => $dueTodayCount,
-            'recent_transactions' => $recentTransactions->map(function ($record) {
-                return [
-                    'id' => $record->id,
-                    'student_name' => $record->student->name,
-                    'student_number' => $record->student->student_number,
-                    'items' => $record->items->map(function ($item) {
-                        return [
-                            'name' => $item->name,
-                            'quantity' => $item->pivot->quantity,
-                        ];
-                    }),
-                    'status' => $record->status,
-                    'borrowed_at' => $record->borrowed_at,
-                    'due_at' => $record->due_at,
-                    'returned_at' => $record->returned_at,
-                ];
-            })
+            'recent_transactions' => \App\Http\Resources\BorrowRecordResource::collection($recentTransactions)
         ];
     }
 }

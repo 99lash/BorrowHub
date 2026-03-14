@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Services\DashboardService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -29,6 +28,7 @@ class DashboardController extends Controller
                 'Dashboard statistics retrieved successfully.'
             );
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to retrieve dashboard statistics.', ['exception' => $e]);
             return $this->errorResponse('An error occurred while retrieving dashboard statistics.', 500);
         }
     }
