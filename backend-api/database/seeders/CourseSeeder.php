@@ -13,17 +13,17 @@ class CourseSeeder extends Seeder
      */
     public function run(): void
     {
-        Course::create([
-            'name' => 'BS in Information Technology',
-        ]);
+        $courses = [
+            'BS in Information Technology',
+            'BS in Computer Science',
+            'BS in Information Systems',
+        ];
 
-        Course::create([
-            'name' => 'BS in Computer Science',
-        ]);
-
-        Course::create([
-            'name' => 'BS in Information Systems',
-        ]);
+        foreach ($courses as $courseName) {
+            Course::create([
+                'name' => $courseName,
+            ]);
+        }
     }
 }
 
