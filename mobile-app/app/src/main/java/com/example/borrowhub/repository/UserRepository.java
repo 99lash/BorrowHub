@@ -32,8 +32,8 @@ public class UserRepository {
     private final ExecutorService executorService;
 
     public UserRepository(Application application) {
-        this.apiService = ApiClient.getInstance().getApiService();
         this.sessionManager = new SessionManager(application);
+        this.apiService = ApiClient.getInstance(this.sessionManager).getApiService();
         this.userDao = AppDatabase.getInstance(application).userDao();
         this.executorService = Executors.newSingleThreadExecutor();
     }
@@ -82,23 +82,36 @@ public class UserRepository {
         return loginResult;
     }
 
-    public void logout() {
+    public LiveData<Boolean> logout() {
+        MutableLiveData<Boolean> logoutResult = new MutableLiveData<>();
+        Runnable clearLocalSession = () -> {
+            sessionManager.clearSession();
+            executorService.execute(userDao::deleteAll);
+            logoutResult.postValue(true);
+        };
+
         String token = sessionManager.getAuthToken();
-        if (token != null) {
+        if (token != null && !token.trim().isEmpty()) {
             apiService.logout(token).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
-                    // Ignored
+                    clearLocalSession.run();
                 }
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    // Ignored
+                    clearLocalSession.run();
                 }
             });
+        } else {
+            clearLocalSession.run();
         }
-        
-        sessionManager.clearSession();
-        executorService.execute(userDao::deleteAll);
+
+        return logoutResult;
+    }
+
+    public boolean hasActiveSession() {
+        String token = sessionManager.getAuthToken();
+        return token != null && !token.trim().isEmpty();
     }
 }
