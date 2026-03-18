@@ -32,7 +32,14 @@ class BorrowRecordSeeder extends Seeder
         for ($i = 0; $i < 20; $i++) {
             DB::transaction(function () use ($students, $items, $admin) {
                 $student = $students->random();
-                $borrowedItems = $items->where('available_quantity', '>', 0)->random(rand(1, 3));
+
+                $availableItems = $items->where('available_quantity', '>', 0);
+
+                if ($availableItems->isEmpty()) {
+                    return; // Skip this iteration if no items are available
+                }
+
+                $borrowedItems = $availableItems->random(rand(1, min(3, $availableItems->count())));
 
                 $borrowRecord = BorrowRecord::factory()->create([
                     'student_id' => $student->id,
@@ -40,10 +47,8 @@ class BorrowRecordSeeder extends Seeder
                 ]);
 
                 foreach ($borrowedItems as $item) {
-                    if ($item->available_quantity > 0) {
-                        $borrowRecord->items()->attach($item->id, ['quantity' => 1]);
-                        $item->decrement('available_quantity');
-                    }
+                    $borrowRecord->items()->attach($item->id, ['quantity' => 1]);
+                    $item->decrement('available_quantity');
                 }
             });
         }
