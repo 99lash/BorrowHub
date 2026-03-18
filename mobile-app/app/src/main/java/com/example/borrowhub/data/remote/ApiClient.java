@@ -46,6 +46,10 @@ public class ApiClient {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
+    /**
+     * Returns a singleton ApiClient instance.
+     * The first provided SessionManager is retained for the process lifetime.
+     */
     public static synchronized ApiClient getInstance(SessionManager sessionManager) {
         if (instance == null) {
             instance = new ApiClient(sessionManager);

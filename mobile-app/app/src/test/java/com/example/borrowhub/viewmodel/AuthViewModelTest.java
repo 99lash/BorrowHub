@@ -127,5 +127,6 @@ public class AuthViewModelTest {
 
         verify(mockIsLoadingObserver).onChanged(false);
         verify(mockLoginResultObserver).onChanged(true);
+        authViewModel.getLogoutResult().removeObserver(mockLoginResultObserver);
     }
 }

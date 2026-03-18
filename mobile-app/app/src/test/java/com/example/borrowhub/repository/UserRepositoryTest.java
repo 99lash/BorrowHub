@@ -120,5 +120,6 @@ public class UserRepositoryTest {
         verify(mockUserDao).deleteAll();
         verify(mockApiService).logout("Bearer fake_token");
         verify(mockObserver).onChanged(true);
+        result.removeObserver(mockObserver);
     }
 }

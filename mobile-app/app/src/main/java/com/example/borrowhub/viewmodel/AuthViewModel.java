@@ -15,7 +15,7 @@ public class AuthViewModel extends AndroidViewModel {
 
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> logoutResult = new MutableLiveData<>();
+    private final MediatorLiveData<Boolean> logoutResult = new MediatorLiveData<>();
 
     public AuthViewModel(Application application) {
         super(application);
@@ -70,14 +70,14 @@ public class AuthViewModel extends AndroidViewModel {
     public void logout() {
         isLoading.setValue(true);
         LiveData<Boolean> repoResult = userRepository.logout();
-        androidx.lifecycle.Observer<Boolean> observer = new androidx.lifecycle.Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean success) {
-                isLoading.setValue(false);
-                logoutResult.setValue(Boolean.TRUE.equals(success));
-                repoResult.removeObserver(this);
-            }
-        };
-        repoResult.observeForever(observer);
+        logoutResult.addSource(repoResult, success -> {
+            isLoading.setValue(false);
+            logoutResult.setValue(Boolean.TRUE.equals(success));
+            logoutResult.removeSource(repoResult);
+        });
+    }
+
+    public void clearLogoutResult() {
+        logoutResult.setValue(null);
     }
 }
