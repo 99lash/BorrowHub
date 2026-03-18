@@ -15,6 +15,7 @@ public class AuthViewModel extends AndroidViewModel {
 
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> logoutResult = new MutableLiveData<>();
 
     public AuthViewModel(Application application) {
         super(application);
@@ -32,6 +33,10 @@ public class AuthViewModel extends AndroidViewModel {
 
     public LiveData<String> getErrorMessage() {
         return errorMessage;
+    }
+
+    public LiveData<Boolean> getLogoutResult() {
+        return logoutResult;
     }
 
     public LiveData<Boolean> login(String username, String password) {
@@ -56,5 +61,23 @@ public class AuthViewModel extends AndroidViewModel {
         });
 
         return finalResult;
+    }
+
+    public boolean hasActiveSession() {
+        return userRepository.hasActiveSession();
+    }
+
+    public void logout() {
+        isLoading.setValue(true);
+        LiveData<Boolean> repoResult = userRepository.logout();
+        androidx.lifecycle.Observer<Boolean> observer = new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean success) {
+                isLoading.setValue(false);
+                logoutResult.setValue(Boolean.TRUE.equals(success));
+                repoResult.removeObserver(this);
+            }
+        };
+        repoResult.observeForever(observer);
     }
 }
