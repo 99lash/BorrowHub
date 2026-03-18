@@ -106,12 +106,19 @@ public class UserRepository {
     }
 
     private void clearLocalSession(MutableLiveData<Boolean> logoutResult) {
+        try {
+            sessionManager.clearSession();
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Failed to clear auth session", e);
+            logoutResult.postValue(false);
+            return;
+        }
+
         executorService.execute(() -> {
             try {
-                sessionManager.clearSession();
                 userDao.deleteAll();
                 logoutResult.postValue(true);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 Log.e(TAG, "Failed to clear local session", e);
                 logoutResult.postValue(false);
             }
