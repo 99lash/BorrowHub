@@ -67,3 +67,9 @@ Self-service tools for the logged-in user.
 *   **Profile Personalization:** Update full name and username.
 *   **Password Management:** Secure workflow for changing account passwords with current password validation.
 *   **Role Transparency:** Clear visibility of the user's assigned role and permissions.
+
+## 9. Global Layout & Navigation `@src/app/components/MainLayout.tsx` & `@src/app/components/ui/navigation-menu.tsx`
+Provides the persistent application shell and navigation structure.
+*   **Persistent Header:** Displays the application logo and user profile dropdown across all main views.
+*   **User Profile Menu:** Allows quick access to Account Settings, User Management, Student Management, and Logout based on the user's role.
+*   **Responsive Navigation:** A sticky bottom navigation bar utilizing `navigation-menu` components for seamless transitions between Home, Inventory, Transaction, and Logs.
