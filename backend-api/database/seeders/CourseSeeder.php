@@ -19,11 +19,16 @@ class CourseSeeder extends Seeder
             'BS in Information Systems',
         ];
 
+        $data = [];
+        $now = now();
         foreach ($courses as $courseName) {
-            Course::create([
+            $data[] = [
                 'name' => $courseName,
-            ]);
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
         }
+        Course::insert($data);
     }
 }
 
