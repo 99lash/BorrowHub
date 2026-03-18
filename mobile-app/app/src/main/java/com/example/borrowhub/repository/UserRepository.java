@@ -84,34 +84,46 @@ public class UserRepository {
 
     public LiveData<Boolean> logout() {
         MutableLiveData<Boolean> logoutResult = new MutableLiveData<>();
-        Runnable clearLocalSession = () -> {
-            sessionManager.clearSession();
-            executorService.execute(userDao::deleteAll);
-            logoutResult.postValue(true);
-        };
 
         String token = sessionManager.getAuthToken();
-        if (token != null && !token.trim().isEmpty()) {
+        if (isValidToken(token)) {
             apiService.logout(token).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
-                    clearLocalSession.run();
+                    clearLocalSession(logoutResult);
                 }
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    clearLocalSession.run();
+                    clearLocalSession(logoutResult);
                 }
             });
         } else {
-            clearLocalSession.run();
+            clearLocalSession(logoutResult);
         }
 
         return logoutResult;
     }
 
+    private void clearLocalSession(MutableLiveData<Boolean> logoutResult) {
+        executorService.execute(() -> {
+            try {
+                sessionManager.clearSession();
+                userDao.deleteAll();
+                logoutResult.postValue(true);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to clear local session", e);
+                logoutResult.postValue(false);
+            }
+        });
+    }
+
     public boolean hasActiveSession() {
         String token = sessionManager.getAuthToken();
+        return isValidToken(token);
+    }
+
+    private boolean isValidToken(String token) {
         return token != null && !token.trim().isEmpty();
     }
 }
