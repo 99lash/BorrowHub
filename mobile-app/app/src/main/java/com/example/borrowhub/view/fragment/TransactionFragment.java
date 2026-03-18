@@ -15,7 +15,7 @@ public class TransactionFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentTransactionBinding.inflate(inflater, container, false);
+        binding = com.example.borrowhub.databinding.FragmentTransactionBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
