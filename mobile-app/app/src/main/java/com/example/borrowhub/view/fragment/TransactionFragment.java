@@ -10,9 +10,18 @@ import androidx.fragment.app.Fragment;
 import com.example.borrowhub.R;
 
 public class TransactionFragment extends Fragment {
+    private com.example.borrowhub.databinding.FragmentTransactionBinding binding;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_transaction, container, false);
+        binding = com.example.borrowhub.databinding.FragmentTransactionBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
