@@ -9,7 +9,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Item Name">
+        android:hint="@string/inventory_field_item_name">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etItemName"
@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:hint="Type"
+        android:hint="@string/inventory_field_type"
         app:endIconMode="dropdown_menu">
 
         <AutoCompleteTextView
@@ -43,7 +43,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Total Quantity">
+            android:hint="@string/inventory_field_total_quantity">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etTotalQuantity"
@@ -61,7 +61,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Available Quantity">
+            android:hint="@string/inventory_field_available_quantity">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etAvailableQuantity"

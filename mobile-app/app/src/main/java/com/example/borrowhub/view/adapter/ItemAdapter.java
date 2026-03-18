@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.borrowhub.R;
 import com.example.borrowhub.data.local.entity.ItemEntity;
+import com.example.borrowhub.viewmodel.InventoryConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             tvItemName.setText(item.name);
             tvType.setText(item.type);
             tvStatus.setText(item.status);
-            tvStock.setText("Available " + item.availableQuantity + " / " + item.totalQuantity);
+            tvStock.setText(itemView.getContext().getString(
+                    R.string.inventory_stock_format,
+                    item.availableQuantity,
+                    item.totalQuantity
+            ));
 
             applyStatusColor(itemView.getContext(), item.status);
 
@@ -91,13 +96,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             int textColor;
             int bgColor;
 
-            if ("Available".equalsIgnoreCase(status)) {
+            if (InventoryConstants.STATUS_AVAILABLE.equalsIgnoreCase(status)) {
                 textColor = ContextCompat.getColor(context, R.color.inventory_status_available_text);
                 bgColor = ContextCompat.getColor(context, R.color.inventory_status_available_bg);
-            } else if ("Borrowed".equalsIgnoreCase(status)) {
+            } else if (InventoryConstants.STATUS_BORROWED.equalsIgnoreCase(status)) {
                 textColor = ContextCompat.getColor(context, R.color.inventory_status_borrowed_text);
                 bgColor = ContextCompat.getColor(context, R.color.inventory_status_borrowed_bg);
-            } else if ("Maintenance".equalsIgnoreCase(status)) {
+            } else if (InventoryConstants.STATUS_MAINTENANCE.equalsIgnoreCase(status)) {
                 textColor = ContextCompat.getColor(context, R.color.inventory_status_maintenance_text);
                 bgColor = ContextCompat.getColor(context, R.color.inventory_status_maintenance_bg);
             } else {

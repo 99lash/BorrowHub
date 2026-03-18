@@ -57,7 +57,7 @@
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Edit item"
+            android:contentDescription="@string/inventory_content_desc_edit_item"
             android:padding="4dp"
             android:src="@android:drawable/ic_menu_edit"
             app:tint="@color/primary_crimson" />
@@ -68,7 +68,7 @@
             android:layout_height="32dp"
             android:layout_marginStart="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Delete item"
+            android:contentDescription="@string/inventory_content_desc_delete_item"
             android:padding="4dp"
             android:src="@android:drawable/ic_menu_delete"
             app:tint="@color/primary_crimson" />

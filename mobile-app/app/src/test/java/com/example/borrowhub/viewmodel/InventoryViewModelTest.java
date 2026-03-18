@@ -51,7 +51,8 @@ public class InventoryViewModelTest {
 
     @Test
     public void addUpdateDeleteItem_updatesInventoryList() {
-        int initialSize = viewModel.getInventoryItems().getValue() == null ? 0 : viewModel.getInventoryItems().getValue().size();
+        List<ItemEntity> initialItems = viewModel.getInventoryItems().getValue();
+        int initialSize = initialItems == null ? 0 : initialItems.size();
 
         viewModel.addItem("Tablet - Samsung", "Equipment", 5, 5);
         List<ItemEntity> afterAdd = viewModel.getInventoryItems().getValue();

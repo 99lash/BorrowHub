@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +21,7 @@ import com.example.borrowhub.R;
 import com.example.borrowhub.data.local.entity.ItemEntity;
 import com.example.borrowhub.databinding.FragmentInventoryBinding;
 import com.example.borrowhub.view.adapter.ItemAdapter;
+import com.example.borrowhub.viewmodel.InventoryConstants;
 import com.example.borrowhub.viewmodel.InventoryViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
@@ -30,7 +30,15 @@ import java.util.List;
 
 public class InventoryFragment extends Fragment implements ItemAdapter.ItemActionListener {
 
-    private static final String[] ITEM_TYPES = new String[]{"All Types", "Equipment", "Laptop"};
+    private static final String[] ITEM_TYPES_FILTER = new String[]{
+            InventoryConstants.TYPE_ALL,
+            InventoryConstants.TYPE_EQUIPMENT,
+            InventoryConstants.TYPE_LAPTOP
+    };
+    private static final String[] ITEM_TYPES_FORM = new String[]{
+            InventoryConstants.TYPE_EQUIPMENT,
+            InventoryConstants.TYPE_LAPTOP
+    };
 
     private FragmentInventoryBinding binding;
     private InventoryViewModel viewModel;
@@ -81,7 +89,7 @@ public class InventoryFragment extends Fragment implements ItemAdapter.ItemActio
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                ITEM_TYPES
+                ITEM_TYPES_FILTER
         );
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerTypeFilter.setAdapter(spinnerAdapter);
@@ -96,7 +104,7 @@ public class InventoryFragment extends Fragment implements ItemAdapter.ItemActio
 
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {
-                viewModel.setTypeFilter("All Types");
+                viewModel.setTypeFilter(InventoryConstants.TYPE_ALL);
             }
         });
     }
@@ -123,12 +131,12 @@ public class InventoryFragment extends Fragment implements ItemAdapter.ItemActio
     @Override
     public void onDeleteItem(ItemEntity item) {
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Delete Item")
-                .setMessage("Delete " + item.name + " from inventory?")
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("Delete", (dialog, which) -> {
+                .setTitle(R.string.inventory_delete_title)
+                .setMessage(getString(R.string.inventory_delete_message, item.name))
+                .setNegativeButton(R.string.inventory_action_cancel, null)
+                .setPositiveButton(R.string.inventory_action_delete, (dialog, which) -> {
                     viewModel.deleteItem(item.id);
-                    Toast.makeText(requireContext(), "Item deleted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), R.string.inventory_item_deleted, Toast.LENGTH_SHORT).show();
                 })
                 .show();
     }
@@ -141,11 +149,10 @@ public class InventoryFragment extends Fragment implements ItemAdapter.ItemActio
         TextInputEditText etTotalQuantity = dialogView.findViewById(R.id.etTotalQuantity);
         TextInputEditText etAvailableQuantity = dialogView.findViewById(R.id.etAvailableQuantity);
 
-        String[] dialogTypes = new String[]{"Equipment", "Laptop"};
         ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_dropdown_item_1line,
-                dialogTypes
+                ITEM_TYPES_FORM
         );
         acType.setAdapter(typeAdapter);
 
@@ -157,10 +164,10 @@ public class InventoryFragment extends Fragment implements ItemAdapter.ItemActio
         }
 
         AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(itemToEdit == null ? "Add New Item" : "Edit Item")
+                .setTitle(itemToEdit == null ? R.string.inventory_dialog_add_title : R.string.inventory_dialog_edit_title)
                 .setView(dialogView)
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton(itemToEdit == null ? "Add Item" : "Save Changes", null)
+                .setNegativeButton(R.string.inventory_action_cancel, null)
+                .setPositiveButton(itemToEdit == null ? R.string.inventory_action_add : R.string.inventory_action_save, null)
                 .create();
 
         dialog.setOnShowListener(d -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
@@ -170,21 +177,21 @@ public class InventoryFragment extends Fragment implements ItemAdapter.ItemActio
             Integer availableQuantity = parsePositiveInt(etAvailableQuantity.getText());
 
             if (name.isEmpty() || type.isEmpty() || totalQuantity == null || availableQuantity == null) {
-                Toast.makeText(requireContext(), "Please complete all fields", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.inventory_error_complete_fields, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (availableQuantity > totalQuantity) {
-                Toast.makeText(requireContext(), "Available quantity cannot exceed total", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.inventory_error_available_exceeds_total, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (itemToEdit == null) {
                 viewModel.addItem(name, type, totalQuantity, availableQuantity);
-                Toast.makeText(requireContext(), "Item added", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.inventory_item_added, Toast.LENGTH_SHORT).show();
             } else {
                 viewModel.updateItem(itemToEdit.id, name, type, totalQuantity, availableQuantity);
-                Toast.makeText(requireContext(), "Item updated", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.inventory_item_updated, Toast.LENGTH_SHORT).show();
             }
 
             dialog.dismiss();

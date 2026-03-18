@@ -16,14 +16,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class InventoryViewModel extends AndroidViewModel {
 
-    private static final String TYPE_ALL = "All Types";
-
     private final MutableLiveData<List<ItemEntity>> inventoryItems = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<List<ItemEntity>> filteredItems = new MutableLiveData<>(new ArrayList<>());
     private final AtomicLong nextId = new AtomicLong(1000L);
 
     private String searchQuery = "";
-    private String typeFilter = TYPE_ALL;
+    private String normalizedSearchQuery = "";
+    private String typeFilter = InventoryConstants.TYPE_ALL;
 
     public InventoryViewModel(@NonNull Application application) {
         super(application);
@@ -41,11 +40,14 @@ public class InventoryViewModel extends AndroidViewModel {
 
     public void setSearchQuery(String query) {
         searchQuery = query == null ? "" : query.trim();
+        normalizedSearchQuery = searchQuery.toLowerCase(Locale.US);
         applyFilters();
     }
 
     public void setTypeFilter(String selectedType) {
-        typeFilter = (selectedType == null || selectedType.trim().isEmpty()) ? TYPE_ALL : selectedType;
+        typeFilter = (selectedType == null || selectedType.trim().isEmpty())
+                ? InventoryConstants.TYPE_ALL
+                : selectedType;
         applyFilters();
     }
 
@@ -55,7 +57,7 @@ public class InventoryViewModel extends AndroidViewModel {
                 nextId.incrementAndGet(),
                 name,
                 type,
-                availableQuantity == 0 ? "Borrowed" : "Available",
+                calculateStatusForAvailability(availableQuantity),
                 totalQuantity,
                 availableQuantity
         );
@@ -70,8 +72,8 @@ public class InventoryViewModel extends AndroidViewModel {
             ItemEntity item = current.get(i);
             if (item.id == id) {
                 String updatedStatus = item.status;
-                if (!"Maintenance".equalsIgnoreCase(updatedStatus)) {
-                    updatedStatus = availableQuantity == 0 ? "Borrowed" : "Available";
+                if (!InventoryConstants.STATUS_MAINTENANCE.equalsIgnoreCase(updatedStatus)) {
+                    updatedStatus = calculateStatusForAvailability(availableQuantity);
                 }
                 current.set(i, new ItemEntity(id, name, type, updatedStatus, totalQuantity, availableQuantity));
                 break;
@@ -98,8 +100,8 @@ public class InventoryViewModel extends AndroidViewModel {
         List<ItemEntity> filtered = new ArrayList<>();
 
         for (ItemEntity item : source) {
-            boolean matchesSearch = item.name != null && item.name.toLowerCase(Locale.US).contains(searchQuery.toLowerCase(Locale.US));
-            boolean matchesType = TYPE_ALL.equalsIgnoreCase(typeFilter)
+            boolean matchesSearch = item.name != null && item.name.toLowerCase(Locale.US).contains(normalizedSearchQuery);
+            boolean matchesType = InventoryConstants.TYPE_ALL.equalsIgnoreCase(typeFilter)
                     || (item.type != null && item.type.equalsIgnoreCase(typeFilter));
 
             if (matchesSearch && matchesType) {
@@ -116,16 +118,22 @@ public class InventoryViewModel extends AndroidViewModel {
 
     private List<ItemEntity> seedInventory() {
         List<ItemEntity> seed = new ArrayList<>();
-        seed.add(new ItemEntity(1, "Projector - Epson EB-X41", "Equipment", "Available", 12, 9));
-        seed.add(new ItemEntity(2, "Laptop - Dell XPS 15", "Laptop", "Borrowed", 20, 14));
-        seed.add(new ItemEntity(3, "Camera - Canon EOS R6", "Equipment", "Available", 5, 3));
-        seed.add(new ItemEntity(4, "Laptop - MacBook Pro 16", "Laptop", "Available", 10, 10));
-        seed.add(new ItemEntity(5, "Conference Microphone", "Equipment", "Borrowed", 4, 0));
-        seed.add(new ItemEntity(6, "Extension Cable 10m", "Equipment", "Available", 30, 28));
-        seed.add(new ItemEntity(7, "Wireless Presenter", "Equipment", "Available", 8, 6));
-        seed.add(new ItemEntity(8, "Portable Speaker", "Equipment", "Maintenance", 4, 2));
-        seed.add(new ItemEntity(9, "Tripod Stand", "Equipment", "Available", 6, 5));
-        seed.add(new ItemEntity(10, "HDMI Cable 5m", "Equipment", "Available", 25, 25));
+        seed.add(new ItemEntity(1, "Projector - Epson EB-X41", InventoryConstants.TYPE_EQUIPMENT, InventoryConstants.STATUS_AVAILABLE, 12, 9));
+        seed.add(new ItemEntity(2, "Laptop - Dell XPS 15", InventoryConstants.TYPE_LAPTOP, InventoryConstants.STATUS_BORROWED, 20, 14));
+        seed.add(new ItemEntity(3, "Camera - Canon EOS R6", InventoryConstants.TYPE_EQUIPMENT, InventoryConstants.STATUS_AVAILABLE, 5, 3));
+        seed.add(new ItemEntity(4, "Laptop - MacBook Pro 16", InventoryConstants.TYPE_LAPTOP, InventoryConstants.STATUS_AVAILABLE, 10, 10));
+        seed.add(new ItemEntity(5, "Conference Microphone", InventoryConstants.TYPE_EQUIPMENT, InventoryConstants.STATUS_BORROWED, 4, 0));
+        seed.add(new ItemEntity(6, "Extension Cable 10m", InventoryConstants.TYPE_EQUIPMENT, InventoryConstants.STATUS_AVAILABLE, 30, 28));
+        seed.add(new ItemEntity(7, "Wireless Presenter", InventoryConstants.TYPE_EQUIPMENT, InventoryConstants.STATUS_AVAILABLE, 8, 6));
+        seed.add(new ItemEntity(8, "Portable Speaker", InventoryConstants.TYPE_EQUIPMENT, InventoryConstants.STATUS_MAINTENANCE, 4, 2));
+        seed.add(new ItemEntity(9, "Tripod Stand", InventoryConstants.TYPE_EQUIPMENT, InventoryConstants.STATUS_AVAILABLE, 6, 5));
+        seed.add(new ItemEntity(10, "HDMI Cable 5m", InventoryConstants.TYPE_EQUIPMENT, InventoryConstants.STATUS_AVAILABLE, 25, 25));
         return seed;
+    }
+
+    private String calculateStatusForAvailability(int availableQuantity) {
+        return availableQuantity == 0
+                ? InventoryConstants.STATUS_BORROWED
+                : InventoryConstants.STATUS_AVAILABLE;
     }
 }
