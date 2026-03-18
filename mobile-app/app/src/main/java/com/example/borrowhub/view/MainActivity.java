@@ -45,22 +45,21 @@ public class MainActivity extends AppCompatActivity {
 
         // Setup TopAppBar menu clicks
         binding.topAppBar.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.action_account_settings:
-                    Toast.makeText(this, "Account Settings Clicked", Toast.LENGTH_SHORT).show();
-                    return true;
-                case R.id.action_user_management:
-                    Toast.makeText(this, "User Management Clicked", Toast.LENGTH_SHORT).show();
-                    return true;
-                case R.id.action_student_management:
-                    Toast.makeText(this, "Student Management Clicked", Toast.LENGTH_SHORT).show();
-                    return true;
-                case R.id.action_logout:
-                    Toast.makeText(this, "Logout Clicked", Toast.LENGTH_SHORT).show();
-                    return true;
-                default:
-                    return false;
+            int itemId = item.getItemId();
+            if (itemId == R.id.action_account_settings) {
+                Toast.makeText(this, "Account Settings Clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.action_user_management) {
+                Toast.makeText(this, "User Management Clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.action_student_management) {
+                Toast.makeText(this, "Student Management Clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.action_logout) {
+                Toast.makeText(this, "Logout Clicked", Toast.LENGTH_SHORT).show();
+                return true;
             }
+            return false;
         });
     }
 }
