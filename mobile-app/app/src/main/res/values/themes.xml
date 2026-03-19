@@ -11,7 +11,7 @@
 
         <item name="colorSurface">@color/gray_50</item>
         <item name="colorOnSurface">@color/on_surface</item>
-        <item name="colorBackground">@color/gray_50</item>
+        <item name="android:colorBackground">@color/gray_50</item>
         <item name="colorOnBackground">@color/on_background</item>
 
         <item name="android:statusBarColor">@color/primary_crimson_dark</item>
