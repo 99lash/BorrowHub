@@ -51,4 +51,33 @@
     <string name="inventory_item_updated">Item updated</string>
     <string name="inventory_item_deleted">Item deleted</string>
     <string name="inventory_stock_format">Available %1$d / %2$d</string>
+
+    <string name="transaction_title">Transactions</string>
+    <string name="transaction_subtitle">Manage borrow and return workflows</string>
+    <string name="transaction_tab_borrow">Borrow Item</string>
+    <string name="transaction_tab_return">Return Item</string>
+    <string name="transaction_borrow_placeholder">Borrow workflow coming soon.</string>
+
+    <string name="return_title">Return Item</string>
+    <string name="return_subtitle">Process item returns</string>
+    <string name="return_search_hint">Search by student name, number, or item…</string>
+    <string name="return_empty_state">No active borrows match your search.</string>
+    <string name="return_borrowed_label">Borrowed</string>
+    <string name="return_timestamp_format">Borrowed: %1$s at %2$s</string>
+    <string name="return_item_bullet_format">• %1$s</string>
+
+    <string name="return_dialog_title">Return Verification</string>
+    <string name="return_dialog_section_borrower">Borrower Information</string>
+    <string name="return_dialog_section_items">Items Information</string>
+    <string name="return_dialog_section_time">Time Information</string>
+    <string name="return_dialog_label_name">Student Name</string>
+    <string name="return_dialog_label_number">Student / Employee No.</string>
+    <string name="return_dialog_label_course">Course / Department</string>
+    <string name="return_dialog_label_collateral">Collateral</string>
+    <string name="return_dialog_label_borrow_date">Borrow Date &amp; Time</string>
+    <string name="return_dialog_borrow_datetime_format">%1$s at %2$s</string>
+    <string name="return_dialog_collateral_reminder">Verify ALL items and return the %1$s before confirming.</string>
+    <string name="return_dialog_action_process">Process Return</string>
+    <string name="return_dialog_action_cancel">Cancel</string>
+    <string name="return_success_toast">Return processed successfully.</string>
 </resources>
