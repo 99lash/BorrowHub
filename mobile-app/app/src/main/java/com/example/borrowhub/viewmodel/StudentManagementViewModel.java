@@ -54,14 +54,6 @@ public class StudentManagementViewModel extends AndroidViewModel {
 
     public void addStudent(String studentNumber, String name, String course) {
         List<StudentEntity> current = safeList(allStudents.getValue());
-
-        // Check for duplicate student number
-        for (StudentEntity s : current) {
-            if (s.studentNumber.equalsIgnoreCase(studentNumber.trim())) {
-                return;
-            }
-        }
-
         StudentEntity newStudent = new StudentEntity(
                 nextId.incrementAndGet(),
                 studentNumber.trim(),
@@ -125,7 +117,7 @@ public class StudentManagementViewModel extends AndroidViewModel {
         List<StudentEntity> current = safeList(allStudents.getValue());
         List<StudentEntity> newStudents = new ArrayList<>();
 
-        String[] lines = csvText.trim().split("\n");
+        String[] lines = csvText.trim().split("\\r?\\n");
         for (String line : lines) {
             if (line.trim().isEmpty()) continue;
 
@@ -191,7 +183,7 @@ public class StudentManagementViewModel extends AndroidViewModel {
         List<CreateStudentRequestDTO> requests = new ArrayList<>();
         if (csvText == null || csvText.trim().isEmpty()) return requests;
 
-        String[] lines = csvText.trim().split("\n");
+        String[] lines = csvText.trim().split("\\r?\\n");
         for (String line : lines) {
             if (line.trim().isEmpty()) continue;
             String[] parts = line.split(",");

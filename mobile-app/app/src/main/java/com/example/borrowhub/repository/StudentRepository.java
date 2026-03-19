@@ -41,6 +41,7 @@ public class StudentRepository {
 
     private final StudentDao studentDao;
     private final CourseDao courseDao;
+    private final AppDatabase database;
     private final ApiService apiService;
     private final SessionManager sessionManager;
     private final ExecutorService executorService;
@@ -51,6 +52,7 @@ public class StudentRepository {
     public StudentRepository(AppDatabase database, SessionManager sessionManager) {
         this.studentDao = database.studentDao();
         this.courseDao = database.courseDao();
+        this.database = database;
         this.apiService = ApiClient.getInstance(sessionManager).getApiService();
         this.sessionManager = sessionManager;
         this.executorService = Executors.newSingleThreadExecutor();
@@ -60,9 +62,10 @@ public class StudentRepository {
      * Constructor for testing with dependency injection.
      */
     public StudentRepository(StudentDao studentDao, CourseDao courseDao,
-                             ApiService apiService, SessionManager sessionManager) {
+                             AppDatabase database, ApiService apiService, SessionManager sessionManager) {
         this.studentDao = studentDao;
         this.courseDao = courseDao;
+        this.database = database;
         this.apiService = apiService;
         this.sessionManager = sessionManager;
         this.executorService = Executors.newSingleThreadExecutor();
@@ -236,8 +239,10 @@ public class StudentRepository {
                         entities.add(convertDtoToEntity(dto));
                     }
                     executorService.execute(() -> {
-                        studentDao.deleteAll();
-                        studentDao.insertAll(entities);
+                        database.runInTransaction(() -> {
+                            studentDao.deleteAll();
+                            studentDao.insertAll(entities);
+                        });
                         Log.d(TAG, "Students synced: " + entities.size());
                     });
                 } else {
