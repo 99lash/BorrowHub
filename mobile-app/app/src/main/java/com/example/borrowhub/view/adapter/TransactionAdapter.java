@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.borrowhub.R;
@@ -63,17 +64,22 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             String status = transaction.status;
             tvTransactionStatus.setText(status);
 
-            // Simple status styling
+            int textColorRes;
+            int bgColorRes;
+
             if ("Borrowed".equalsIgnoreCase(status)) {
-                tvTransactionStatus.setTextColor(android.graphics.Color.parseColor("#B45309")); // amber-700
-                tvTransactionStatus.setBackgroundColor(android.graphics.Color.parseColor("#FEF3C7")); // amber-100
+                textColorRes = R.color.inventory_status_borrowed_text;
+                bgColorRes = R.color.inventory_status_borrowed_bg;
             } else if ("Returned".equalsIgnoreCase(status)) {
-                tvTransactionStatus.setTextColor(android.graphics.Color.parseColor("#15803D")); // green-700
-                tvTransactionStatus.setBackgroundColor(android.graphics.Color.parseColor("#DCFCE7")); // green-100
+                textColorRes = R.color.inventory_status_available_text;
+                bgColorRes = R.color.inventory_status_available_bg;
             } else {
-                tvTransactionStatus.setTextColor(android.graphics.Color.parseColor("#374151")); // gray-700
-                tvTransactionStatus.setBackgroundColor(android.graphics.Color.parseColor("#F3F4F6")); // gray-100
+                textColorRes = R.color.gray_700;
+                bgColorRes = R.color.gray_100;
             }
+
+            tvTransactionStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), textColorRes));
+            tvTransactionStatus.setBackgroundTintList(ContextCompat.getColorStateList(itemView.getContext(), bgColorRes));
         }
     }
 }

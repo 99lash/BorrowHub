@@ -189,7 +189,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                app:cardBackgroundColor="#DC143C"
+                app:cardBackgroundColor="?attr/colorPrimary"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="4dp"
                 android:clickable="true"
@@ -205,14 +205,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/dashboard_borrow_return"
-                        android:textColor="#FFFFFF"
+                        android:textColor="?attr/colorOnPrimary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/dashboard_borrow_return_desc"
-                        android:textColor="#F3F4F6"
+                        android:textColor="?attr/colorOnPrimary"
                         android:textSize="12sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -221,7 +221,7 @@
                 android:id="@+id/btnManageInventory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="#1F2937"
+                app:cardBackgroundColor="?attr/colorSecondary"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="4dp"
                 android:clickable="true"
@@ -237,14 +237,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/dashboard_manage_inventory"
-                        android:textColor="#FFFFFF"
+                        android:textColor="?attr/colorOnSecondary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/dashboard_manage_inventory_desc"
-                        android:textColor="#9CA3AF"
+                        android:textColor="?attr/colorOnSecondary"
                         android:textSize="12sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -277,7 +277,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:text="@string/dashboard_view_all"
-                android:textColor="#4B5563"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="14sp"
                 android:padding="8dp"
                 android:clickable="true"
