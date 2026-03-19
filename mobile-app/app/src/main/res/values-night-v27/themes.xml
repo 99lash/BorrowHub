@@ -1,5 +1,4 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.BorrowHub" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary_crimson</item>
         <item name="colorPrimaryVariant">@color/primary_crimson_dark</item>
@@ -17,6 +16,7 @@
         <item name="android:statusBarColor">@color/primary_crimson_dark</item>
         <item name="android:navigationBarColor">@color/gray_100</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 
     <style name="Theme.BorrowHub" parent="Base.Theme.BorrowHub" />

@@ -17,7 +17,6 @@
         <item name="android:statusBarColor">@color/primary_crimson_dark</item>
         <item name="android:navigationBarColor">@color/gray_50</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
     <style name="Theme.BorrowHub" parent="Base.Theme.BorrowHub" />
