@@ -16,4 +16,8 @@
         android:id="@+id/logsFragment"
         android:icon="@drawable/ic_logs"
         android:title="Logs" />
+    <item
+        android:id="@+id/studentManagementFragment"
+        android:icon="@drawable/ic_students"
+        android:title="Students" />
 </menu>
