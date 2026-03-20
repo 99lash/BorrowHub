@@ -19,10 +19,13 @@ import com.example.borrowhub.data.remote.dto.UpdateStudentRequestDTO;
 import com.example.borrowhub.data.remote.dto.ImportStudentsRequestDTO;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import retrofit2.Call;
@@ -287,21 +290,48 @@ public class StudentRepository {
         executorService.execute(() -> {
             List<StudentEntity> students = studentDao.getAllStudentsSync();
             Set<String> uniqueCourses = new HashSet<>();
-            List<CourseEntity> coursesToStore = new ArrayList<>();
+            List<CourseEntity> candidateCourses = new ArrayList<>();
 
             for (StudentEntity student : students) {
                 String course = student.getCourse();
                 if (course != null) {
                     String normalized = course.trim();
-                    if (!normalized.isEmpty() && uniqueCourses.add(normalized.toLowerCase())) {
-                        coursesToStore.add(new CourseEntity(normalized));
+                    String normalizedKey = normalized.toLowerCase(Locale.US);
+                    if (!normalized.isEmpty() && uniqueCourses.add(normalizedKey)) {
+                        candidateCourses.add(new CourseEntity(normalized));
                     }
                 }
             }
 
-            courseDao.deleteAll();
-            if (!coursesToStore.isEmpty()) {
-                courseDao.insertAll(coursesToStore);
+            List<CourseEntity> existingCourses = courseDao.getAllCoursesSync();
+            Map<String, CourseEntity> existingByKey = new HashMap<>();
+            for (CourseEntity existing : existingCourses) {
+                if (existing.getName() != null) {
+                    existingByKey.put(existing.getName().trim().toLowerCase(Locale.US), existing);
+                }
+            }
+
+            List<CourseEntity> toInsert = new ArrayList<>();
+            for (CourseEntity candidate : candidateCourses) {
+                String key = candidate.getName().trim().toLowerCase(Locale.US);
+                if (!existingByKey.containsKey(key)) {
+                    toInsert.add(candidate);
+                }
+            }
+
+            List<Integer> toDeleteIds = new ArrayList<>();
+            for (CourseEntity existing : existingCourses) {
+                String key = existing.getName() == null ? "" : existing.getName().trim().toLowerCase(Locale.US);
+                if (!uniqueCourses.contains(key)) {
+                    toDeleteIds.add(existing.getId());
+                }
+            }
+
+            if (!toDeleteIds.isEmpty()) {
+                courseDao.deleteByIds(toDeleteIds);
+            }
+            if (!toInsert.isEmpty()) {
+                courseDao.insertAll(toInsert);
             }
 
             List<CourseEntity> storedCourses = courseDao.getAllCoursesSync();

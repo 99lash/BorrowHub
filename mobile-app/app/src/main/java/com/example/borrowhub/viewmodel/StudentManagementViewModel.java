@@ -38,7 +38,7 @@ public class StudentManagementViewModel extends AndroidViewModel {
         repository = new StudentRepository(database, sessionManager);
         studentsLiveData = repository.getAllStudents();
         studentsObserver = students -> {
-            allStudents = students == null ? new ArrayList<>() : new ArrayList<>(students);
+            allStudents = students == null ? new ArrayList<>() : students;
             applyFilters();
         };
         observeStudents();

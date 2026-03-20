@@ -42,4 +42,7 @@ public interface CourseDao {
 
     @Query("DELETE FROM student_courses")
     void deleteAll();
+
+    @Query("DELETE FROM student_courses WHERE id IN (:courseIds)")
+    void deleteByIds(List<Integer> courseIds);
 }
