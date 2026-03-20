@@ -16,7 +16,7 @@
     <item
         android:id="@+id/action_theme_toggle"
         android:icon="@drawable/ic_moon"
-        android:title="@string/theme_mode_dark"
+        android:title="@string/theme_switch_to_dark"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_logout"

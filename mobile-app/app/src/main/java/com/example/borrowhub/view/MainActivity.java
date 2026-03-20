@@ -21,7 +21,7 @@ import com.example.borrowhub.databinding.ActivityMainBinding;
 import com.example.borrowhub.viewmodel.AuthViewModel;
 
 import android.content.Intent;
-import android.view.Menu;
+import android.content.res.Configuration;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-        updateThemeMenuItem(binding.topAppBar.getMenu().findItem(R.id.action_theme_toggle));
+        binding.topAppBar.post(this::refreshThemeMenuItem);
     }
 
     @Override
@@ -154,13 +154,22 @@ public class MainActivity extends AppCompatActivity {
 
     private void toggleThemeMode() {
         int currentMode = sessionManager.getThemeMode();
-        int nextMode = currentMode == AppCompatDelegate.MODE_NIGHT_YES
-                ? AppCompatDelegate.MODE_NIGHT_NO
-                : AppCompatDelegate.MODE_NIGHT_YES;
+        int nextMode;
+        if (currentMode == AppCompatDelegate.MODE_NIGHT_YES) {
+            nextMode = AppCompatDelegate.MODE_NIGHT_NO;
+        } else if (currentMode == AppCompatDelegate.MODE_NIGHT_NO) {
+            nextMode = AppCompatDelegate.MODE_NIGHT_YES;
+        } else {
+            int currentUiMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            boolean isCurrentlyDark = currentUiMode == Configuration.UI_MODE_NIGHT_YES;
+            nextMode = isCurrentlyDark
+                    ? AppCompatDelegate.MODE_NIGHT_NO
+                    : AppCompatDelegate.MODE_NIGHT_YES;
+        }
 
         sessionManager.setThemeMode(nextMode);
         AppCompatDelegate.setDefaultNightMode(nextMode);
-        updateThemeMenuItem(binding.topAppBar.getMenu().findItem(R.id.action_theme_toggle));
+        refreshThemeMenuItem();
     }
 
     private void updateThemeMenuItem(MenuItem themeItem) {
@@ -168,8 +177,21 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        boolean isDarkMode = sessionManager.getThemeMode() == AppCompatDelegate.MODE_NIGHT_YES;
-        themeItem.setTitle(isDarkMode ? R.string.theme_mode_light : R.string.theme_mode_dark);
+        int savedMode = sessionManager.getThemeMode();
+        boolean isDarkMode;
+        if (savedMode == AppCompatDelegate.MODE_NIGHT_YES) {
+            isDarkMode = true;
+        } else if (savedMode == AppCompatDelegate.MODE_NIGHT_NO) {
+            isDarkMode = false;
+        } else {
+            int currentUiMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+            isDarkMode = currentUiMode == Configuration.UI_MODE_NIGHT_YES;
+        }
+        themeItem.setTitle(isDarkMode ? R.string.theme_switch_to_light : R.string.theme_switch_to_dark);
         themeItem.setIcon(ContextCompat.getDrawable(this, isDarkMode ? R.drawable.ic_sun : R.drawable.ic_moon));
+    }
+
+    private void refreshThemeMenuItem() {
+        updateThemeMenuItem(binding.topAppBar.getMenu().findItem(R.id.action_theme_toggle));
     }
 }

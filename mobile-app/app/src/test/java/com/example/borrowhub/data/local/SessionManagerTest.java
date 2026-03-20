@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -30,8 +32,8 @@ public class SessionManagerTest {
         when(mockPreferences.edit()).thenReturn(mockEditor);
         when(mockEditor.putString("auth_token", "Bearer token")).thenReturn(mockEditor);
         when(mockEditor.remove("auth_token")).thenReturn(mockEditor);
-        when(mockEditor.putInt("theme_mode", 2)).thenReturn(mockEditor);
-        when(mockEditor.putInt("theme_mode", 1)).thenReturn(mockEditor);
+        when(mockEditor.putInt("theme_mode", AppCompatDelegate.MODE_NIGHT_YES)).thenReturn(mockEditor);
+        when(mockEditor.putInt("theme_mode", AppCompatDelegate.MODE_NIGHT_NO)).thenReturn(mockEditor);
         sessionManager = new SessionManager(mockContext);
     }
 
@@ -54,17 +56,19 @@ public class SessionManagerTest {
 
     @Test
     public void setAndGetThemeMode_persistsMode() {
-        sessionManager.setThemeMode(2);
-        verify(mockEditor).putInt("theme_mode", 2);
+        sessionManager.setThemeMode(AppCompatDelegate.MODE_NIGHT_YES);
+        verify(mockEditor).putInt("theme_mode", AppCompatDelegate.MODE_NIGHT_YES);
         verify(mockEditor).apply();
 
-        when(mockPreferences.getInt("theme_mode", -1)).thenReturn(2);
-        assertEquals(2, sessionManager.getThemeMode());
+        when(mockPreferences.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM))
+                .thenReturn(AppCompatDelegate.MODE_NIGHT_YES);
+        assertEquals(AppCompatDelegate.MODE_NIGHT_YES, sessionManager.getThemeMode());
     }
 
     @Test
     public void getThemeMode_defaultIsSystem() {
-        when(mockPreferences.getInt("theme_mode", -1)).thenReturn(-1);
-        assertEquals(-1, sessionManager.getThemeMode());
+        when(mockPreferences.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM))
+                .thenReturn(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        assertEquals(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, sessionManager.getThemeMode());
     }
 }
