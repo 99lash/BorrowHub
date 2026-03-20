@@ -53,13 +53,16 @@ public class AccountSettingsViewModel extends AndroidViewModel {
     }
 
     public void updateProfile(String fullName, String username) {
-        if (isBlank(fullName) || isBlank(username)) {
+        String trimmedFullName = fullName == null ? "" : fullName.trim();
+        String trimmedUsername = username == null ? "" : username.trim();
+
+        if (trimmedFullName.isEmpty() || trimmedUsername.isEmpty()) {
             operationError.setValue(getApplication().getString(R.string.account_settings_error_fields_required));
             return;
         }
 
         isLoading.setValue(true);
-        LiveData<Boolean> repositoryResult = userRepository.updateProfile(fullName.trim(), username.trim());
+        LiveData<Boolean> repositoryResult = userRepository.updateProfile(trimmedFullName, trimmedUsername);
         Observer<Boolean> observer = new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean success) {
@@ -76,20 +79,24 @@ public class AccountSettingsViewModel extends AndroidViewModel {
     }
 
     public void changePassword(String currentPassword, String newPassword, String confirmNewPassword) {
-        if (isBlank(currentPassword) || isBlank(newPassword) || isBlank(confirmNewPassword)) {
+        String trimmedCurrentPassword = currentPassword == null ? "" : currentPassword.trim();
+        String trimmedNewPassword = newPassword == null ? "" : newPassword.trim();
+        String trimmedConfirmPassword = confirmNewPassword == null ? "" : confirmNewPassword.trim();
+
+        if (trimmedCurrentPassword.isEmpty() || trimmedNewPassword.isEmpty() || trimmedConfirmPassword.isEmpty()) {
             operationError.setValue(getApplication().getString(R.string.account_settings_error_fields_required));
             return;
         }
-        if (!newPassword.equals(confirmNewPassword)) {
+        if (!trimmedNewPassword.equals(trimmedConfirmPassword)) {
             operationError.setValue(getApplication().getString(R.string.account_settings_password_mismatch));
             return;
         }
 
         isLoading.setValue(true);
         LiveData<Boolean> repositoryResult = userRepository.changePassword(
-                currentPassword,
-                newPassword,
-                confirmNewPassword
+                trimmedCurrentPassword,
+                trimmedNewPassword,
+                trimmedConfirmPassword
         );
         Observer<Boolean> observer = new Observer<Boolean>() {
             @Override
@@ -106,7 +113,4 @@ public class AccountSettingsViewModel extends AndroidViewModel {
         repositoryResult.observeForever(observer);
     }
 
-    private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
-    }
 }

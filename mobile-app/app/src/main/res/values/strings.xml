@@ -184,4 +184,5 @@
     <string name="account_settings_password_update_failed">Unable to update password. Please try again.</string>
     <string name="account_settings_password_mismatch">New password and confirmation do not match.</string>
     <string name="account_settings_error_fields_required">Please fill in all required fields.</string>
+    <string name="account_settings_loading">Account settings operation in progress</string>
 </resources>

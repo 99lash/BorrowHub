@@ -83,9 +83,6 @@ public class AccountSettingsFragment extends Fragment {
                 return;
             }
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
-            binding.etCurrentPassword.setText("");
-            binding.etNewPassword.setText("");
-            binding.etConfirmNewPassword.setText("");
             viewModel.clearOperationStates();
         });
     }
