@@ -113,8 +113,8 @@ public class TransactionViewModel extends AndroidViewModel {
     }
 
     // --- Getters: Borrow Workflow ---
-    public LiveData<String> getStudentNameInput() { return studentNameInput; }
-    public LiveData<String> getCourseInput() { return courseInput; }
+    public LiveData<String> getStudentName() { return studentNameInput; }
+    public LiveData<String> getCourse() { return courseInput; }
     public LiveData<Boolean> isStudentFound() { return studentFound; }
     public LiveData<List<ItemRow>> getItemRows() { return itemRows; }
     public LiveData<Boolean> isSubmitted() { return submitted; }
@@ -274,6 +274,11 @@ public class TransactionViewModel extends AndroidViewModel {
 
     public String getCurrentDateTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy h:mm a", Locale.US);
+        return sdf.format(new Date());
+    }
+
+    public String getCurrentDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.US);
         return sdf.format(new Date());
     }
 
