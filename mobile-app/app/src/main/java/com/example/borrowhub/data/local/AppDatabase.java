@@ -27,7 +27,7 @@ import com.example.borrowhub.data.local.dao.TransactionLogDao;
 import com.example.borrowhub.data.local.entity.ActivityLogEntity;
 import com.example.borrowhub.data.local.entity.TransactionLogEntity;
 
-@Database(entities = {ExampleEntity.class, User.class, DashboardStatsEntity.class, RecentTransactionEntity.class, ItemEntity.class, CategoryEntity.class, StudentEntity.class, CourseEntity.class, ActivityLogEntity.class, TransactionLogEntity.class}, version = 5, exportSchema = false)
+@Database(entities = {ExampleEntity.class, User.class, DashboardStatsEntity.class, RecentTransactionEntity.class, ItemEntity.class, CategoryEntity.class, StudentEntity.class, CourseEntity.class, ActivityLogEntity.class, TransactionLogEntity.class}, version = 6, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase instance;
