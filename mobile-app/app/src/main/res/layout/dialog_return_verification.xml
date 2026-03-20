@@ -238,7 +238,7 @@
                 android:layout_marginEnd="10dp"
                 android:src="@android:drawable/ic_dialog_alert"
                 android:contentDescription="@null"
-                android:imageTintList="@color/inventory_status_borrowed_text" />
+                app:tint="@color/inventory_status_borrowed_text" />
 
             <TextView
                 android:id="@+id/tvCollateralReminder"
