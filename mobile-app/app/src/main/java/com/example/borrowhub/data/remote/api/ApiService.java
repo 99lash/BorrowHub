@@ -20,11 +20,14 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Query;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.DELETE;
 import retrofit2.http.Header;
 import retrofit2.http.Path;
+import com.example.borrowhub.data.remote.dto.ActivityLogDTO;
+import com.example.borrowhub.data.remote.dto.TransactionLogDTO;
 
 /**
  * Interface defining the API endpoints for the BorrowHub backend.
@@ -81,4 +84,21 @@ public interface ApiService {
 
     @POST("api/v1/students/import")
     Call<ApiResponseDTO<Void>> importStudents(@Header("Authorization") String token, @Body ImportStudentsRequestDTO request);
+
+    // System Logs
+    @GET("api/v1/activity-logs")
+    Call<ApiResponseDTO<List<ActivityLogDTO>>> getActivityLogs(
+            @Header("Authorization") String token,
+            @Query("action") String action,
+            @Query("target_user_id") String targetUserId,
+            @Query("performed_by") String performedBy
+    );
+
+    @GET("api/v1/transaction-logs")
+    Call<ApiResponseDTO<List<TransactionLogDTO>>> getTransactionLogs(
+            @Header("Authorization") String token,
+            @Query("action") String action,
+            @Query("target_user_id") String targetUserId,
+            @Query("performed_by") String performedBy
+    );
 }
