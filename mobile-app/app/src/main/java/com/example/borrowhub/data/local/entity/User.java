@@ -1,6 +1,7 @@
 package com.example.borrowhub.data.local.entity;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "users")
@@ -13,6 +14,7 @@ public class User {
     private String createdAt;
     private String updatedAt;
 
+    @Ignore
     public User(int id, String name, String username, String role) {
         this(id, name, username, role, "", "");
     }
