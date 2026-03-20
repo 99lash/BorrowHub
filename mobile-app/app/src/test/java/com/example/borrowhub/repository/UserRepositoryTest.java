@@ -2,6 +2,7 @@ package com.example.borrowhub.repository;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -90,15 +91,7 @@ public class UserRepositoryTest {
 
         // Assert
         verify(mockSessionManager).saveAuthToken("Bearer fake_token");
-        
-        // Wait a bit for the executor service to run
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        
-        verify(mockUserDao).insertUser(any(User.class));
+        verify(mockUserDao, timeout(500)).insertUser(any(User.class));
         verify(mockObserver).onChanged(true);
     }
 
@@ -118,14 +111,7 @@ public class UserRepositoryTest {
 
         // Assert
         verify(mockSessionManager).clearSession();
-        
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        
-        verify(mockUserDao).deleteAll();
+        verify(mockUserDao, timeout(500)).deleteAll();
         verify(mockApiService).logout("Bearer fake_token");
         verify(mockObserver).onChanged(true);
         result.removeObserver(mockObserver);
@@ -151,14 +137,7 @@ public class UserRepositoryTest {
         ArgumentCaptor<Callback<ApiResponseDTO<UserDTO>>> captor = ArgumentCaptor.forClass(Callback.class);
         verify(mockUpdateProfileCall).enqueue(captor.capture());
         captor.getValue().onResponse(mockUpdateProfileCall, Response.success(apiResponse));
-
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        verify(mockUserDao).insertUser(any(User.class));
+        verify(mockUserDao, timeout(500)).insertUser(any(User.class));
         verify(mockObserver).onChanged(true);
         result.removeObserver(mockObserver);
     }
