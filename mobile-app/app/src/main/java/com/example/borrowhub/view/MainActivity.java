@@ -4,7 +4,9 @@ import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -14,6 +16,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.borrowhub.R;
+import com.example.borrowhub.data.local.SessionManager;
 import com.example.borrowhub.databinding.ActivityMainBinding;
 import com.example.borrowhub.viewmodel.AuthViewModel;
 
@@ -27,10 +30,13 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private NavController navController;
     private AuthViewModel authViewModel;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sessionManager = new SessionManager(this);
+        applySavedThemeMode();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         EdgeToEdge.enable(this);
@@ -106,12 +112,16 @@ public class MainActivity extends AppCompatActivity {
                     navController.navigate(R.id.studentManagementFragment);
                 }
                 return true;
+            } else if (itemId == R.id.action_theme_toggle) {
+                toggleThemeMode();
+                return true;
             } else if (itemId == R.id.action_logout) {
                 authViewModel.logout();
                 return true;
             }
             return false;
         });
+        updateThemeMenuItem(binding.topAppBar.getMenu().findItem(R.id.action_theme_toggle));
     }
 
     @Override
@@ -137,5 +147,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-}
 
+    private void applySavedThemeMode() {
+        AppCompatDelegate.setDefaultNightMode(sessionManager.getThemeMode());
+    }
+
+    private void toggleThemeMode() {
+        int currentMode = sessionManager.getThemeMode();
+        int nextMode = currentMode == AppCompatDelegate.MODE_NIGHT_YES
+                ? AppCompatDelegate.MODE_NIGHT_NO
+                : AppCompatDelegate.MODE_NIGHT_YES;
+
+        sessionManager.setThemeMode(nextMode);
+        AppCompatDelegate.setDefaultNightMode(nextMode);
+        updateThemeMenuItem(binding.topAppBar.getMenu().findItem(R.id.action_theme_toggle));
+    }
+
+    private void updateThemeMenuItem(MenuItem themeItem) {
+        if (themeItem == null) {
+            return;
+        }
+
+        boolean isDarkMode = sessionManager.getThemeMode() == AppCompatDelegate.MODE_NIGHT_YES;
+        themeItem.setTitle(isDarkMode ? R.string.theme_mode_light : R.string.theme_mode_dark);
+        themeItem.setIcon(ContextCompat.getDrawable(this, isDarkMode ? R.drawable.ic_sun : R.drawable.ic_moon));
+    }
+}
