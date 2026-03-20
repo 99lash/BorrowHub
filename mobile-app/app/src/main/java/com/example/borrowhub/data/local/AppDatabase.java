@@ -51,7 +51,9 @@ public abstract class AppDatabase extends RoomDatabase {
                             context.getApplicationContext(),
                             AppDatabase.class,
                             "borrowhub_database"
-                    ).fallbackToDestructiveMigration()
+                    // Intentionally using destructive migrations for now to keep local cache schema
+                    // changes simple during active development.
+                    .fallbackToDestructiveMigration()
                     .build();
                 }
             }

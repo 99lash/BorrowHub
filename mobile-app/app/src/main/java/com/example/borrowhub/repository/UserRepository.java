@@ -35,19 +35,22 @@ public class UserRepository {
     private final ApiService apiService;
     private final SessionManager sessionManager;
     private final UserDao userDao;
+    private final AppDatabase database;
     private final ExecutorService executorService;
 
     public UserRepository(Application application) {
         this.sessionManager = new SessionManager(application);
         this.apiService = ApiClient.getInstance(this.sessionManager).getApiService();
-        this.userDao = AppDatabase.getInstance(application).userDao();
+        this.database = AppDatabase.getInstance(application);
+        this.userDao = database.userDao();
         this.executorService = Executors.newSingleThreadExecutor();
     }
 
-    public UserRepository(ApiService apiService, SessionManager sessionManager, UserDao userDao) {
+    public UserRepository(ApiService apiService, SessionManager sessionManager, UserDao userDao, AppDatabase database) {
         this.apiService = apiService;
         this.sessionManager = sessionManager;
         this.userDao = userDao;
+        this.database = database;
         this.executorService = Executors.newSingleThreadExecutor();
     }
 
@@ -159,6 +162,10 @@ public class UserRepository {
             public void onResponse(Call<ApiResponseDTO<UserDTO>> call, Response<ApiResponseDTO<UserDTO>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     User user = convertDtoToEntity(response.body().getData());
+                    if (user == null) {
+                        result.postValue(new Result<>(null, "Invalid user response"));
+                        return;
+                    }
                     executorService.execute(() -> userDao.insertUser(user));
                     result.postValue(new Result<>(user, null));
                 } else {
@@ -189,6 +196,10 @@ public class UserRepository {
             public void onResponse(Call<ApiResponseDTO<UserDTO>> call, Response<ApiResponseDTO<UserDTO>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     User user = convertDtoToEntity(response.body().getData());
+                    if (user == null) {
+                        result.postValue(new Result<>(null, "Invalid user response"));
+                        return;
+                    }
                     executorService.execute(() -> userDao.updateUser(user));
                     result.postValue(new Result<>(user, null));
                 } else {
@@ -276,12 +287,17 @@ public class UserRepository {
                     List<User> users = new ArrayList<>();
                     if (userDTOs != null) {
                         for (UserDTO userDTO : userDTOs) {
-                            users.add(convertDtoToEntity(userDTO));
+                            User user = convertDtoToEntity(userDTO);
+                            if (user != null) {
+                                users.add(user);
+                            }
                         }
                     }
                     executorService.execute(() -> {
-                        userDao.deleteAll();
-                        userDao.insertAll(users);
+                        database.runInTransaction(() -> {
+                            userDao.deleteAll();
+                            userDao.insertAll(users);
+                        });
                     });
                 }
             }
@@ -295,7 +311,11 @@ public class UserRepository {
 
     private User convertDtoToEntity(UserDTO userDto) {
         if (userDto == null) {
-            return new User(0, "", "", "", "", "");
+            return null;
+        }
+
+        if (userDto.getName() == null || userDto.getUsername() == null || userDto.getRole() == null) {
+            Log.w(TAG, "User DTO has null required fields for id=" + userDto.getId());
         }
 
         return new User(
@@ -311,7 +331,7 @@ public class UserRepository {
     private String getAuthHeader() {
         String token = sessionManager.getAuthToken();
         if (!isValidToken(token)) {
-            return token;
+            return null;
         }
         return token.startsWith("Bearer ") ? token : "Bearer " + token;
     }

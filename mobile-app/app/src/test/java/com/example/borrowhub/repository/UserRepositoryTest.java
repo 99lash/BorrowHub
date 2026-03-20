@@ -2,6 +2,7 @@ package com.example.borrowhub.repository;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -11,6 +12,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.borrowhub.data.local.SessionManager;
+import com.example.borrowhub.data.local.AppDatabase;
 import com.example.borrowhub.data.local.dao.UserDao;
 import com.example.borrowhub.data.local.entity.User;
 import com.example.borrowhub.data.remote.api.ApiService;
@@ -50,6 +52,8 @@ public class UserRepositoryTest {
     @Mock
     private UserDao mockUserDao;
     @Mock
+    private AppDatabase mockDatabase;
+    @Mock
     private Call<LoginResponseDTO> mockCall;
     @Mock
     private Observer<Boolean> mockObserver;
@@ -71,7 +75,7 @@ public class UserRepositoryTest {
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        userRepository = new UserRepository(mockApiService, mockSessionManager, mockUserDao);
+        userRepository = new UserRepository(mockApiService, mockSessionManager, mockUserDao, mockDatabase);
     }
 
     @Test
@@ -104,14 +108,7 @@ public class UserRepositoryTest {
         // Assert
         verify(mockSessionManager).saveAuthToken("Bearer fake_token");
         
-        // Wait a bit for the executor service to run
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        
-        verify(mockUserDao).insertUser(any(User.class));
+        verify(mockUserDao, timeout(200)).insertUser(any(User.class));
         verify(mockObserver).onChanged(true);
     }
 
@@ -132,13 +129,7 @@ public class UserRepositoryTest {
         // Assert
         verify(mockSessionManager).clearSession();
         
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        
-        verify(mockUserDao).deleteAll();
+        verify(mockUserDao, timeout(200)).deleteAll();
         verify(mockApiService).logout("Bearer fake_token");
         verify(mockObserver).onChanged(true);
         result.removeObserver(mockObserver);
@@ -176,13 +167,7 @@ public class UserRepositoryTest {
         verify(mockCreateUserCall).enqueue(captor.capture());
         captor.getValue().onResponse(mockCreateUserCall, Response.success(responseBody));
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        verify(mockUserDao).insertUser(any(User.class));
+        verify(mockUserDao, timeout(200)).insertUser(any(User.class));
     }
 
     @Test
@@ -204,13 +189,7 @@ public class UserRepositoryTest {
         verify(mockUpdateUserCall).enqueue(captor.capture());
         captor.getValue().onResponse(mockUpdateUserCall, Response.success(responseBody));
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        verify(mockUserDao).updateUser(any(User.class));
+        verify(mockUserDao, timeout(200)).updateUser(any(User.class));
     }
 
     @Test
@@ -225,13 +204,7 @@ public class UserRepositoryTest {
         verify(mockDeleteUserCall).enqueue(captor.capture());
         captor.getValue().onResponse(mockDeleteUserCall, Response.success(new ApiResponseDTO<>("success", "deleted", null)));
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        verify(mockUserDao).deleteById(7);
+        verify(mockUserDao, timeout(200)).deleteById(7);
     }
 
     @Test
