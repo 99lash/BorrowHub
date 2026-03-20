@@ -34,6 +34,9 @@ public interface StudentDao {
     @Query("SELECT * FROM students ORDER BY name ASC")
     LiveData<List<StudentEntity>> getAllStudents();
 
+    @Query("SELECT * FROM students ORDER BY name ASC")
+    List<StudentEntity> getAllStudentsSync();
+
     @Query("SELECT * FROM students WHERE id = :studentId")
     LiveData<StudentEntity> getStudentById(long studentId);
 

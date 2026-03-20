@@ -84,6 +84,10 @@
     <string name="student_import_empty">Please paste CSV data to import</string>
     <string name="student_import_success">Added %1$d students. Skipped %2$d duplicates.</string>
     <string name="student_import_no_valid">No valid new students found to import</string>
+    <string name="student_add_processing">Adding student…</string>
+    <string name="student_update_processing">Updating student…</string>
+    <string name="student_delete_processing">Deleting student…</string>
+    <string name="student_import_processing">Importing students…</string>
 
     <!-- Transaction screen -->
     <string name="transaction_title">Transactions</string>

@@ -25,6 +25,7 @@ import com.example.borrowhub.viewmodel.StudentManagementViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StudentManagementFragment extends Fragment implements StudentAdapter.StudentActionListener {
@@ -32,6 +33,7 @@ public class StudentManagementFragment extends Fragment implements StudentAdapte
     private FragmentStudentManagementBinding binding;
     private StudentManagementViewModel viewModel;
     private StudentAdapter studentAdapter;
+    private List<String> availableCourses = new ArrayList<>();
 
     @Nullable
     @Override
@@ -54,6 +56,8 @@ public class StudentManagementFragment extends Fragment implements StudentAdapte
         setupSearchFilter();
         setupButtons();
         observeStudents();
+        observeCourses();
+        observeOperationState();
     }
 
     private void setupSearchFilter() {
@@ -78,6 +82,28 @@ public class StudentManagementFragment extends Fragment implements StudentAdapte
 
     private void observeStudents() {
         viewModel.getFilteredStudents().observe(getViewLifecycleOwner(), this::renderStudents);
+    }
+
+    private void observeCourses() {
+        viewModel.getAvailableCourses().observe(getViewLifecycleOwner(), courses -> {
+            availableCourses = courses == null ? new ArrayList<>() : new ArrayList<>(courses);
+        });
+    }
+
+    private void observeOperationState() {
+        viewModel.getOperationSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (Boolean.TRUE.equals(success)) {
+                updateStudentCount();
+                viewModel.clearOperationStates();
+            }
+        });
+
+        viewModel.getOperationError().observe(getViewLifecycleOwner(), errorMessage -> {
+            if (errorMessage != null && !errorMessage.isEmpty()) {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                viewModel.clearOperationStates();
+            }
+        });
     }
 
     private void renderStudents(List<StudentEntity> students) {
@@ -106,8 +132,7 @@ public class StudentManagementFragment extends Fragment implements StudentAdapte
                 .setNegativeButton(R.string.student_action_cancel, null)
                 .setPositiveButton(R.string.student_action_delete, (dialog, which) -> {
                     viewModel.deleteStudent(student.id);
-                    Toast.makeText(requireContext(), R.string.student_deleted, Toast.LENGTH_SHORT).show();
-                    updateStudentCount();
+                    Toast.makeText(requireContext(), R.string.student_delete_processing, Toast.LENGTH_SHORT).show();
                 })
                 .show();
     }
@@ -123,7 +148,7 @@ public class StudentManagementFragment extends Fragment implements StudentAdapte
         ArrayAdapter<String> courseAdapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_dropdown_item_1line,
-                StudentManagementViewModel.COURSES
+                availableCourses
         );
         acCourse.setAdapter(courseAdapter);
 
@@ -162,13 +187,12 @@ public class StudentManagementFragment extends Fragment implements StudentAdapte
 
             if (studentToEdit == null) {
                 viewModel.addStudent(studentNumber, name, course);
-                Toast.makeText(requireContext(), R.string.student_added, Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.student_add_processing, Toast.LENGTH_SHORT).show();
             } else {
                 viewModel.updateStudent(studentToEdit.id, studentNumber, name, course);
-                Toast.makeText(requireContext(), R.string.student_updated, Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), R.string.student_update_processing, Toast.LENGTH_SHORT).show();
             }
 
-            updateStudentCount();
             dialog.dismiss();
         }));
 
@@ -195,19 +219,9 @@ public class StudentManagementFragment extends Fragment implements StudentAdapte
                 return;
             }
 
-            int[] result = viewModel.importFromCsv(csvText);
-            int added = result[0];
-            int skipped = result[1];
-
-            if (added > 0) {
-                Toast.makeText(requireContext(),
-                        getString(R.string.student_import_success, added, skipped),
-                        Toast.LENGTH_LONG).show();
-                updateStudentCount();
-                dialog.dismiss();
-            } else {
-                Toast.makeText(requireContext(), R.string.student_import_no_valid, Toast.LENGTH_SHORT).show();
-            }
+            viewModel.importFromCsv(csvText);
+            Toast.makeText(requireContext(), R.string.student_import_processing, Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
         }));
 
         dialog.show();

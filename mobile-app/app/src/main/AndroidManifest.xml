@@ -29,6 +29,11 @@
             android:exported="false">
         </activity>
 
+        <activity
+            android:name=".view.StudentManagementActivity"
+            android:exported="false"
+            android:parentActivityName=".view.MainActivity" />
+
     </application>
 
 </manifest>

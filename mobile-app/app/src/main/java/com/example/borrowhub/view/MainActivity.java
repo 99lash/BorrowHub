@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         if (navHostFragment != null) {
             navController = navHostFragment.getNavController();
             NavigationUI.setupWithNavController(binding.bottomNavigationView, navController);
+            navigateToDashboardIfRequested(getIntent());
         }
 
         // Setup TopAppBar menu clicks
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "User Management Clicked", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (itemId == R.id.action_student_management) {
-                Toast.makeText(this, "Student Management Clicked", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, StudentManagementActivity.class));
                 return true;
             } else if (itemId == R.id.action_logout) {
                 authViewModel.logout();
@@ -85,5 +86,22 @@ public class MainActivity extends AppCompatActivity {
                 authViewModel.clearLogoutResult();
             }
         });
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        navigateToDashboardIfRequested(intent);
+    }
+
+    private void navigateToDashboardIfRequested(Intent intent) {
+        if (navController != null
+                && intent != null
+                && intent.getBooleanExtra(StudentManagementActivity.EXTRA_OPEN_DASHBOARD, false)
+                && navController.getCurrentDestination() != null
+                && navController.getCurrentDestination().getId() != R.id.homeFragment) {
+            navController.navigate(R.id.homeFragment);
+        }
     }
 }

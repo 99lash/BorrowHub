@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.HashSet;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -275,6 +277,45 @@ public class StudentRepository {
      */
     public LiveData<List<CourseEntity>> getAllCourses() {
         return courseDao.getAllCourses();
+    }
+
+    public interface CoursesCallback {
+        void onSuccess(List<String> courseNames);
+    }
+
+    public void refreshCoursesFromStudents(CoursesCallback callback) {
+        executorService.execute(() -> {
+            List<StudentEntity> students = studentDao.getAllStudentsSync();
+            Set<String> uniqueCourses = new HashSet<>();
+            List<CourseEntity> coursesToStore = new ArrayList<>();
+
+            for (StudentEntity student : students) {
+                String course = student.getCourse();
+                if (course != null) {
+                    String normalized = course.trim();
+                    if (!normalized.isEmpty() && uniqueCourses.add(normalized.toLowerCase())) {
+                        coursesToStore.add(new CourseEntity(normalized));
+                    }
+                }
+            }
+
+            courseDao.deleteAll();
+            if (!coursesToStore.isEmpty()) {
+                courseDao.insertAll(coursesToStore);
+            }
+
+            List<CourseEntity> storedCourses = courseDao.getAllCoursesSync();
+            List<String> courseNames = new ArrayList<>();
+            for (CourseEntity course : storedCourses) {
+                if (course.getName() != null && !course.getName().trim().isEmpty()) {
+                    courseNames.add(course.getName());
+                }
+            }
+
+            if (callback != null) {
+                callback.onSuccess(courseNames);
+            }
+        });
     }
 
     // ==================== Callback Interface ====================

@@ -34,6 +34,9 @@ public interface CourseDao {
     @Query("SELECT * FROM student_courses ORDER BY name ASC")
     LiveData<List<CourseEntity>> getAllCourses();
 
+    @Query("SELECT * FROM student_courses ORDER BY name ASC")
+    List<CourseEntity> getAllCoursesSync();
+
     @Query("SELECT * FROM student_courses WHERE id = :courseId")
     LiveData<CourseEntity> getCourseById(int courseId);
 
