@@ -8,9 +8,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.borrowhub.R;
 import com.example.borrowhub.databinding.FragmentTransactionBinding;
+import com.example.borrowhub.viewmodel.TransactionViewModel;
 import com.google.android.material.tabs.TabLayout;
 
 public class TransactionFragment extends Fragment {
@@ -19,6 +21,7 @@ public class TransactionFragment extends Fragment {
     private static final int TAB_RETURN = 1;
 
     private FragmentTransactionBinding binding;
+    private TransactionViewModel viewModel;
 
     @Nullable
     @Override
@@ -32,8 +35,12 @@ public class TransactionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Initialize ViewModel
+        viewModel = new ViewModelProvider(this).get(TransactionViewModel.class);
+
         setupTabs();
 
+        // Default to Borrow tab
         if (savedInstanceState == null) {
             showTab(TAB_BORROW);
         }
@@ -61,12 +68,16 @@ public class TransactionFragment extends Fragment {
         });
     }
 
+    /**
+     * Replaces the content of the transaction container with the appropriate fragment.
+     */
     private void showTab(int position) {
         Fragment fragment;
         if (position == TAB_RETURN) {
             fragment = new ReturnItemFragment();
         } else {
-            fragment = new BorrowPlaceholderFragment();
+            // BorrowItemFragment is the main borrow workflow implementation
+            fragment = new BorrowItemFragment();
         }
 
         getChildFragmentManager()
@@ -79,26 +90,5 @@ public class TransactionFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-    }
-
-    // -------------------------------------------------------------------------
-    // Inline placeholder for the Borrow tab (not yet implemented)
-    // -------------------------------------------------------------------------
-
-    public static class BorrowPlaceholderFragment extends Fragment {
-        @Nullable
-        @Override
-        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                                 @Nullable Bundle savedInstanceState) {
-            android.widget.TextView tv = new android.widget.TextView(requireContext());
-            tv.setText(R.string.transaction_borrow_placeholder);
-            tv.setGravity(android.view.Gravity.CENTER);
-            tv.setPadding(32, 64, 32, 64);
-            tv.setTextColor(
-                    androidx.core.content.ContextCompat.getColor(
-                            requireContext(),
-                            com.example.borrowhub.R.color.gray_500));
-            return tv;
-        }
     }
 }
