@@ -14,6 +14,8 @@
         <item name="android:colorBackground">@color/white</item>
         <item name="colorOnBackground">@color/gray_900</item>
 
+        <item name="colorOutlineVariant">@color/gray_200</item>
+
         <item name="android:statusBarColor">@color/primary_crimson_dark</item>
         <item name="android:navigationBarColor">@color/white</item>
         <item name="android:windowLightStatusBar">true</item>
