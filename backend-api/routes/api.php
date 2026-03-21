@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\LogController;
 
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\AccountController;
 
 Route::prefix('v1')->group(function () {
     // Public routes
@@ -20,6 +21,10 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
+        
+        // Account & Security Settings
+        Route::patch('/user/profile', [AccountController::class, 'updateProfile']);
+        Route::patch('/user/password', [AccountController::class, 'updatePassword']);
 
         // Admin Only Routes
         Route::middleware('role:admin')->group(function () {
