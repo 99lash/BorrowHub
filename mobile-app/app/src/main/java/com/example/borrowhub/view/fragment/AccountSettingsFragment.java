@@ -56,12 +56,6 @@ public class AccountSettingsFragment extends Fragment {
             binding.etFullName.setText(user.getName());
             binding.etUsername.setText(user.getUsername());
             binding.etRole.setText(user.getRole());
-            binding.tvDisplayName.setText(user.getName());
-            binding.tvRoleBadge.setText(user.getRole());
-            String username = user.getUsername() == null ? "" : user.getUsername();
-            binding.tvAvatarInitial.setText(
-                    username.isEmpty() ? "U" : username.substring(0, 1).toUpperCase()
-            );
         });
 
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading ->
