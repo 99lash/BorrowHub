@@ -60,6 +60,9 @@ public class AccountSettingsViewModelTest {
         viewModel.getIsLoading().observeForever(mockLoadingObserver);
         viewModel.getOperationError().observeForever(mockErrorObserver);
         viewModel.getOperationSuccess().observeForever(mockSuccessObserver);
+
+        // Reset observers to ignore initial LiveData values
+        org.mockito.Mockito.reset(mockLoadingObserver, mockErrorObserver, mockSuccessObserver);
     }
 
     @Test
