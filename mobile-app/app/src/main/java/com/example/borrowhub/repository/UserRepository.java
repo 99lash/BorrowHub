@@ -105,7 +105,7 @@ public class UserRepository {
     public LiveData<Boolean> logout() {
         MutableLiveData<Boolean> logoutResult = new MutableLiveData<>();
 
-        String token = sessionManager.getAuthToken();
+        String token = getAuthHeader();
         if (isValidToken(token)) {
             apiService.logout(token).enqueue(new Callback<Void>() {
                 @Override
@@ -154,7 +154,7 @@ public class UserRepository {
 
     public LiveData<Boolean> updateProfile(String fullName, String username) {
         MutableLiveData<Boolean> updateResult = new MutableLiveData<>();
-        String token = sessionManager.getAuthToken();
+        String token = getAuthHeader();
         if (!isValidToken(token)) {
             updateResult.postValue(false);
             return updateResult;
@@ -191,7 +191,7 @@ public class UserRepository {
 
     public LiveData<Boolean> changePassword(String currentPassword, String newPassword, String confirmPassword) {
         MutableLiveData<Boolean> changePasswordResult = new MutableLiveData<>();
-        String token = sessionManager.getAuthToken();
+        String token = getAuthHeader();
         if (!isValidToken(token)) {
             changePasswordResult.postValue(false);
             return changePasswordResult;
