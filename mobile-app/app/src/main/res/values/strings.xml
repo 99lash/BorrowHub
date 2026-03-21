@@ -1,17 +1,23 @@
 <resources>
     <string name="app_name">BorrowHub</string>
     <string name="login_title">BorrowHub</string>
-    <string name="login_subtitle">Management Information System</string>
+    <string name="login_subtitle">Borrowable Asset Management System
+</string>
     <string name="username_label">Username</string>
     <string name="username_hint">Enter your username (admin / staff)</string>
     <string name="password_label">Password</string>
     <string name="password_hint">Enter your password (123)</string>
     <string name="sign_in_button">Sign In</string>
     <string name="login_footer_text">Authorized personnel only</string>
-    <string name="login_copyright">© 2026 Computer Science Studies. All rights reserved.</string>
+    <string name="login_copyright">© 2026 Computer Studies Department. All rights reserved.</string>
     <string name="error_empty_fields">Username and password cannot be empty</string>
     <string name="login_failed">Invalid Credentials: Username or password is incorrect.</string>
     <string name="login_success">Login Successful</string>
+    <string name="logout_failed">Logout failed. Please try again.</string>
+    <string name="theme_mode_light">Light Mode</string>
+    <string name="theme_mode_dark">Dark Mode</string>
+    <string name="theme_switch_to_light">Switch to Light Mode</string>
+    <string name="theme_switch_to_dark">Switch to Dark Mode</string>
 
     <string name="dashboard_title">Dashboard</string>
     <string name="dashboard_subtitle">Overview of resource management</string>
@@ -24,5 +30,192 @@
     <string name="dashboard_manage_inventory">Manage Inventory</string>
     <string name="dashboard_manage_inventory_desc">View and edit items</string>
     <string name="dashboard_recent_transactions">Recent Transactions</string>
-    <string name="dashboard_view_all">View All →</string>
+    <string name="dashboard_view_all">View All</string>
+
+    <string name="inventory_title">Inventory Management</string>
+    <string name="inventory_subtitle">Manage and track all resources</string>
+    <string name="inventory_search_hint">Search by item name...</string>
+    <string name="inventory_empty_state">No items found matching your criteria.</string>
+    <string name="inventory_field_item_name">Item Name</string>
+    <string name="inventory_field_type">Type</string>
+    <string name="inventory_field_total_quantity">Total Quantity</string>
+    <string name="inventory_field_available_quantity">Available Quantity</string>
+    <string name="inventory_content_desc_edit_item">Edit item</string>
+    <string name="inventory_content_desc_delete_item">Delete item</string>
+    <string name="inventory_delete_title">Delete Item</string>
+    <string name="inventory_delete_message">Delete %1$s from inventory?</string>
+    <string name="inventory_action_cancel">Cancel</string>
+    <string name="inventory_action_delete">Delete</string>
+    <string name="inventory_action_add">Add Item</string>
+    <string name="inventory_action_save">Save Changes</string>
+    <string name="inventory_dialog_add_title">Add New Item</string>
+    <string name="inventory_dialog_edit_title">Edit Item</string>
+    <string name="inventory_error_complete_fields">Please complete all fields</string>
+    <string name="inventory_error_available_exceeds_total">Available quantity cannot exceed total</string>
+    <string name="inventory_item_added">Item added</string>
+    <string name="inventory_item_updated">Item updated</string>
+    <string name="inventory_item_deleted">Item deleted</string>
+    <string name="inventory_stock_format">Available %1$d / %2$d</string>
+
+    <!-- Student Management -->
+    <string name="student_title">Student Management</string>
+    <string name="student_subtitle">Manage master list of university students</string>
+    <string name="student_search_hint">Search by student number or name…</string>
+    <string name="student_empty_state">No students found. Add students to get started.</string>
+    <string name="student_total_count">Total: %1$d</string>
+    <string name="student_field_number">Student Number</string>
+    <string name="student_field_name">Full Name</string>
+    <string name="student_field_course">Course</string>
+    <string name="student_content_desc_edit">Edit student</string>
+    <string name="student_content_desc_delete">Delete student</string>
+    <string name="student_delete_title">Delete Student</string>
+    <string name="student_delete_message">Remove %1$s from the student list?</string>
+    <string name="student_action_cancel">Cancel</string>
+    <string name="student_action_delete">Delete</string>
+    <string name="student_action_add">Add Student</string>
+    <string name="student_action_save">Save Student</string>
+    <string name="student_action_update">Save Changes</string>
+    <string name="student_action_import">Bulk Import</string>
+    <string name="student_dialog_add_title">Add New Student</string>
+    <string name="student_dialog_edit_title">Edit Student</string>
+    <string name="student_error_complete_fields">Please fill in all fields</string>
+    <string name="student_error_duplicate_number">Student Number already exists</string>
+    <string name="student_added">Student added successfully</string>
+    <string name="student_updated">Student updated successfully</string>
+    <string name="student_deleted">Student removed</string>
+    <string name="student_import_title">Bulk Import Students</string>
+    <string name="student_import_hint">Paste CSV data below. Format: Student Number, Full Name, Course Name</string>
+    <string name="student_import_csv_label">CSV Data</string>
+    <string name="student_import_empty">Please paste CSV data to import</string>
+    <string name="student_import_success">Added %1$d students. Skipped %2$d duplicates.</string>
+    <string name="student_import_no_valid">No valid new students found to import</string>
+    <string name="student_add_processing">Adding student…</string>
+    <string name="student_update_processing">Updating student…</string>
+    <string name="student_delete_processing">Deleting student…</string>
+    <string name="student_import_processing">Importing students…</string>
+
+    <!-- User Management -->
+    <string name="user_title">User Management</string>
+    <string name="user_subtitle">Manage administrator and staff accounts</string>
+    <string name="user_search_hint">Search by name or username…</string>
+    <string name="user_empty_state">No users found.</string>
+    <string name="user_total_count">Total: %1$d</string>
+    <string name="user_field_full_name">Full Name</string>
+    <string name="user_field_username">Username</string>
+    <string name="user_field_role">Role</string>
+    <string name="user_username_format">@%1$s</string>
+    <string name="user_role_admin">Admin</string>
+    <string name="user_role_staff">Staff</string>
+    <string name="user_content_desc_reset_password">Reset password</string>
+    <string name="user_content_desc_edit">Edit user</string>
+    <string name="user_content_desc_delete">Delete user</string>
+    <string name="user_delete_title">Delete User</string>
+    <string name="user_delete_message">Delete %1$s?</string>
+    <string name="user_delete_protected_admin">Cannot delete the admin user</string>
+    <string name="user_reset_password_title">Reset Password</string>
+    <string name="user_reset_password_message">Reset password for @%1$s to the system default?</string>
+    <string name="user_action_cancel">Cancel</string>
+    <string name="user_action_delete">Delete</string>
+    <string name="user_action_reset">Reset</string>
+    <string name="user_action_add">Add User</string>
+    <string name="user_action_save">Save User</string>
+    <string name="user_action_update">Save Changes</string>
+    <string name="user_dialog_add_title">Add New User</string>
+    <string name="user_dialog_edit_title">Edit User</string>
+    <string name="user_error_complete_fields">Please fill in all fields</string>
+    <string name="user_add_processing">Adding user…</string>
+    <string name="user_update_processing">Updating user…</string>
+    <string name="user_operation_success">Operation successful</string>
+
+    <!-- Transaction screen -->
+    <string name="transaction_title">Transactions</string>
+    <string name="transaction_subtitle">Manage borrow and return workflows</string>
+    <string name="transaction_tab_borrow">Borrow Item</string>
+    <string name="transaction_tab_return">Return Item</string>
+
+    <!-- Borrow form - info card -->
+    <string name="transaction_date_label">Date &amp; Time:</string>
+    <string name="transaction_processed_by_label">Processed by:</string>
+    <string name="transaction_return_by_label">Return by:</string>
+    <string name="transaction_return_by_value">End of day (Same day)</string>
+    <string name="transaction_staff_name">System Staff</string>
+
+    <!-- Borrow form - borrower information -->
+    <string name="transaction_borrower_info_title">Borrower Information</string>
+    <string name="transaction_student_number_label">Student Number *</string>
+    <string name="transaction_full_name_label">Full Name *</string>
+    <string name="transaction_course_label">Course *</string>
+    <string name="transaction_collateral_label">Collateral *</string>
+
+    <!-- Borrow form - items -->
+    <string name="transaction_items_title">Items to Borrow</string>
+    <string name="transaction_add_item">Add Item</string>
+    <string name="transaction_remove_item">Remove</string>
+    <string name="transaction_item_type_label">Category / Type</string>
+    <string name="transaction_item_name_label">Specific Item</string>
+
+    <!-- Borrow form - policy note -->
+    <string name="transaction_important_note">Important: All borrowed items must be returned by the end of the day.</string>
+
+    <!-- Borrow form - submit -->
+    <string name="transaction_submit_borrow">Submit Borrow Request</string>
+
+    <!-- Success state -->
+    <string name="transaction_success_title">Borrow Request Submitted</string>
+    <string name="transaction_success_desc">The items have been successfully assigned to the borrower.</string>
+    <string name="transaction_success_return_label">Return by end of day:</string>
+
+    <!-- Return workflow -->
+    <string name="return_title">Return Item</string>
+    <string name="return_subtitle">Process item returns</string>
+    <string name="return_search_hint">Search by student name, number, or item…</string>
+    <string name="return_empty_state">No active borrows match your search.</string>
+    <string name="return_borrowed_label">Borrowed</string>
+    <string name="return_timestamp_format">Borrowed: %1$s at %2$s</string>
+    <string name="return_item_bullet_format">• %1$s</string>
+
+    <string name="return_dialog_title">Return Verification</string>
+    <string name="return_dialog_section_borrower">Borrower Information</string>
+    <string name="return_dialog_section_items">Items Information</string>
+    <string name="return_dialog_section_time">Time Information</string>
+    <string name="return_dialog_label_name">Student Name</string>
+    <string name="return_dialog_label_number">Student / Employee No.</string>
+    <string name="return_dialog_label_course">Course / Department</string>
+    <string name="return_dialog_label_collateral">Collateral</string>
+    <string name="return_dialog_label_borrow_date">Borrow Date &amp; Time</string>
+    <string name="return_dialog_borrow_datetime_format">%1$s at %2$s</string>
+    <string name="return_dialog_collateral_reminder">Verify ALL items and return the %1$s before confirming.</string>
+    <string name="return_dialog_action_process">Process Return</string>
+    <string name="return_dialog_action_cancel">Cancel</string>
+    <string name="return_success_toast">Return processed successfully.</string>
+
+    <!-- Logs -->
+    <string name="logs_title">System Logs</string>
+    <string name="logs_subtitle">Review transaction and activity history</string>
+    <string name="logs_tab_transaction">Transaction Logs</string>
+    <string name="logs_tab_activity">Activity Logs</string>
+    <string name="logs_search_hint">Search by user, ID, or details…</string>
+    <string name="logs_transaction_empty_state">No transaction logs match your filters.</string>
+    <string name="logs_activity_empty_state">No activity logs match your filters.</string>
+
+    <!-- Account Settings -->
+    <string name="account_settings_title">Account &amp; Security</string>
+    <string name="account_settings_subtitle">Manage profile information and password</string>
+    <string name="account_settings_general_info">General Information</string>
+    <string name="account_settings_security">Security</string>
+    <string name="account_settings_username">Username</string>
+    <string name="account_settings_role">Role</string>
+    <string name="account_settings_full_name">Full Name</string>
+    <string name="account_settings_current_password">Current Password</string>
+    <string name="account_settings_new_password">New Password</string>
+    <string name="account_settings_confirm_new_password">Confirm New Password</string>
+    <string name="account_settings_save_changes">Save Changes</string>
+    <string name="account_settings_update_password">Update Password</string>
+    <string name="account_settings_profile_updated">Profile updated successfully.</string>
+    <string name="account_settings_profile_update_failed">Unable to update profile. Please try again.</string>
+    <string name="account_settings_password_updated">Password updated successfully.</string>
+    <string name="account_settings_password_update_failed">Unable to update password. Please try again.</string>
+    <string name="account_settings_password_mismatch">New password and confirmation do not match.</string>
+    <string name="account_settings_error_fields_required">Please fill in all required fields.</string>
+    <string name="account_settings_loading">Account settings operation in progress</string>
 </resources>

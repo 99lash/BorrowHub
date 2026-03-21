@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="primary_crimson">#D06C7A</color>
+    <color name="primary_crimson_dark">#B85A68</color>
+    <color name="primary_crimson_darker">#9C4A58</color>
+    <color name="primary_crimson_transparent">#33D06C7A</color>
+
+    <color name="gray_50">#1D232E</color>
+    <color name="gray_100">#252C37</color>
+    <color name="gray_200">#2E3541</color>
+    <color name="gray_400">#7A8293</color>
+    <color name="gray_500">#949CB0</color>
+    <color name="gray_700">#C0C8D6</color>
+    <color name="gray_900">#131922</color>
+
+    <color name="on_surface">#D6DEE9</color>
+    <color name="on_background">#D6DEE9</color>
+    <color name="on_secondary">#1B222D</color>
+
+    <color name="inventory_status_available_text">#7BC2A1</color>
+    <color name="inventory_status_available_bg">#24322C</color>
+    <color name="inventory_status_borrowed_text">#D0AD74</color>
+    <color name="inventory_status_borrowed_bg">#312922</color>
+    <color name="inventory_status_maintenance_text">#D28B8B</color>
+    <color name="inventory_status_maintenance_bg">#312426</color>
+
+    <color name="student_course_badge_text">#93C5FD</color>
+    <color name="student_course_badge_bg">#1E3A5F</color>
+    <color name="student_course_badge_border">#1D4ED8</color>
+    <color name="student_avatar_bg">#2D3069</color>
+    <color name="student_avatar_text">#A5B4FC</color>
+    <color name="user_role_admin_text">#C4B5FD</color>
+    <color name="user_role_admin_bg">#2E1E5A</color>
+    <color name="user_role_admin_border">#5B21B6</color>
+    <color name="user_role_staff_text">#86EFAC</color>
+    <color name="user_role_staff_bg">#1C3A2A</color>
+    <color name="user_role_staff_border">#15803D</color>
+</resources>
