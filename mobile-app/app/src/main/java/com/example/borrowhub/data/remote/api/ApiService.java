@@ -17,6 +17,9 @@ import com.example.borrowhub.data.remote.dto.ImportStudentsRequestDTO;
 import com.example.borrowhub.data.remote.dto.UpdateProfileRequestDTO;
 import com.example.borrowhub.data.remote.dto.ChangePasswordRequestDTO;
 import com.example.borrowhub.data.remote.dto.UserDTO;
+import com.example.borrowhub.data.remote.dto.CreateUserRequestDTO;
+import com.example.borrowhub.data.remote.dto.UpdateUserRequestDTO;
+import com.example.borrowhub.data.remote.dto.ResetPasswordRequestDTO;
 
 import java.util.List;
 
@@ -42,6 +45,25 @@ public interface ApiService {
 
     @POST("api/v1/logout")
     Call<Void> logout(@Header("Authorization") String token);
+
+    // User Management
+    @GET("api/v1/users")
+    Call<ApiResponseDTO<List<UserDTO>>> getUsers(@Header("Authorization") String token);
+
+    @GET("api/v1/users/{id}")
+    Call<ApiResponseDTO<UserDTO>> getUser(@Header("Authorization") String token, @Path("id") int userId);
+
+    @POST("api/v1/users")
+    Call<ApiResponseDTO<UserDTO>> createUser(@Header("Authorization") String token, @Body CreateUserRequestDTO request);
+
+    @PUT("api/v1/users/{id}")
+    Call<ApiResponseDTO<UserDTO>> updateUser(@Header("Authorization") String token, @Path("id") int userId, @Body UpdateUserRequestDTO request);
+
+    @DELETE("api/v1/users/{id}")
+    Call<ApiResponseDTO<Void>> deleteUser(@Header("Authorization") String token, @Path("id") int userId);
+
+    @POST("api/v1/users/{id}/reset-password")
+    Call<ApiResponseDTO<Void>> resetUserPassword(@Header("Authorization") String token, @Path("id") int userId, @Body ResetPasswordRequestDTO request);
 
     @GET("api/v1/dashboard/stats")
     Call<DashboardStatsDTO> getDashboardStats(@Header("Authorization") String token);

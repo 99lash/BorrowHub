@@ -106,7 +106,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             } else if (itemId == R.id.action_user_management) {
-                Toast.makeText(this, "User Management Clicked", Toast.LENGTH_SHORT).show();
+                if (navController != null) {
+                    navController.navigate(R.id.userManagementFragment);
+                }
                 return true;
             } else if (itemId == R.id.action_student_management) {
                 if (navController != null) {
