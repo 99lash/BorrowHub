@@ -4,17 +4,17 @@
     <item
         android:id="@+id/action_account_settings"
         android:icon="@drawable/ic_settings"
-        android:title="Account Settings"
+        android:title="@string/account_settings_title"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_user_management"
         android:icon="@drawable/ic_shield"
-        android:title="User Management"
+        android:title="@string/user_title"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_student_management"
         android:icon="@drawable/ic_students"
-        android:title="Student Management"
+        android:title="@string/student_title"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_theme_toggle"
@@ -24,6 +24,6 @@
     <item
         android:id="@+id/action_logout"
         android:icon="@drawable/ic_arrow_back"
-        android:title="Logout"
+        android:title="@string/logout_action"
         app:showAsAction="never" />
 </menu>
