@@ -23,7 +23,7 @@
         <!-- Improved Dialog UI -->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
 
-        <!-- Improved Toolbar and Dropdown UI -->
+        <!-- Improved Toolbar and Dropdown UI: Styles for Issue #79 -->
         <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
         <item name="actionOverflowMenuStyle">@style/Widget.App.OverflowMenu</item>
         <item name="popupMenuStyle">@style/Widget.App.PopupMenu</item>
