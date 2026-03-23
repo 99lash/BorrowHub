@@ -39,6 +39,7 @@
     <string name="inventory_empty_state">No items found matching your criteria.</string>
     <string name="inventory_field_item_name">Item Name</string>
     <string name="inventory_field_type">Type</string>
+    <string name="inventory_field_status">Status</string>
     <string name="inventory_field_total_quantity">Total Quantity</string>
     <string name="inventory_field_available_quantity">Available Quantity</string>
     <string name="inventory_content_desc_edit_item">Edit item</string>
@@ -57,6 +58,7 @@
     <string name="inventory_item_updated">Item updated</string>
     <string name="inventory_item_deleted">Item deleted</string>
     <string name="inventory_stock_format">Available %1$d / %2$d</string>
+    <string name="inventory_page_format">Page %1$d of %2$d</string>
 
     <!-- Student Management -->
     <string name="student_title">Student Management</string>

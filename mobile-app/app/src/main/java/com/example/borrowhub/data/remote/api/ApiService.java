@@ -77,6 +77,16 @@ public interface ApiService {
 
     // Inventory - Items
     @GET("api/v1/items")
+    Call<ApiResponseDTO<List<ItemDTO>>> getItems(
+            @Header("Authorization") String token,
+            @Query("page") Integer page,
+            @Query("per_page") Integer perPage,
+            @Query("search") String search,
+            @Query("category_id") Integer categoryId,
+            @Query("status") String status
+    );
+
+    @GET("api/v1/items")
     Call<ApiResponseDTO<List<ItemDTO>>> getItems(@Header("Authorization") String token);
 
     @GET("api/v1/items/{id}")
