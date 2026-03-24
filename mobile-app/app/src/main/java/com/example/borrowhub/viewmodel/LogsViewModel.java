@@ -5,7 +5,13 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.MediatorLiveData;
+
+import com.example.borrowhub.data.local.AppDatabase;
+import com.example.borrowhub.data.local.SessionManager;
+import com.example.borrowhub.data.local.entity.ActivityLogEntity;
+import com.example.borrowhub.data.local.entity.TransactionLogEntity;
+import com.example.borrowhub.repository.LogRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,10 +42,11 @@ public class LogsViewModel extends AndroidViewModel {
         }
     }
 
-    private final List<LogEntry> allLogs = seedLogs();
-
-    private final MutableLiveData<List<LogEntry>> transactionLogs = new MutableLiveData<>(new ArrayList<>());
-    private final MutableLiveData<List<LogEntry>> activityLogs = new MutableLiveData<>(new ArrayList<>());
+    private final LogRepository logRepository;
+    private final MediatorLiveData<List<LogEntry>> transactionLogs = new MediatorLiveData<>(new ArrayList<>());
+    private final MediatorLiveData<List<LogEntry>> activityLogs = new MediatorLiveData<>(new ArrayList<>());
+    private LiveData<List<TransactionLogEntity>> transactionSource;
+    private LiveData<List<ActivityLogEntity>> activitySource;
 
     private String transactionSearch = "";
     private String transactionAction = ACTION_ALL;
@@ -47,7 +54,15 @@ public class LogsViewModel extends AndroidViewModel {
     private String activityAction = ACTION_ALL;
 
     public LogsViewModel(@NonNull Application application) {
+        this(application, new LogRepository(
+                AppDatabase.getInstance(application.getApplicationContext()),
+                new SessionManager(application.getApplicationContext())
+        ));
+    }
+
+    LogsViewModel(@NonNull Application application, @NonNull LogRepository logRepository) {
         super(application);
+        this.logRepository = logRepository;
         applyTransactionFilters();
         applyActivityFilters();
     }
@@ -62,12 +77,18 @@ public class LogsViewModel extends AndroidViewModel {
 
     public void setTransactionSearchQuery(String query) {
         transactionSearch = normalize(query);
-        applyTransactionFilters();
+        transactionLogs.setValue(filterTransactionLogs(
+                transactionSource != null ? transactionSource.getValue() : null,
+                transactionSearch
+        ));
     }
 
     public void setActivitySearchQuery(String query) {
         activitySearch = normalize(query);
-        applyActivityFilters();
+        activityLogs.setValue(filterActivityLogs(
+                activitySource != null ? activitySource.getValue() : null,
+                activitySearch
+        ));
     }
 
     public void setTransactionActionFilter(String action) {
@@ -98,34 +119,72 @@ public class LogsViewModel extends AndroidViewModel {
     }
 
     private void applyTransactionFilters() {
-        transactionLogs.setValue(filter(TYPE_TRANSACTION, transactionSearch, transactionAction));
+        String actionFilter = ACTION_ALL.equalsIgnoreCase(transactionAction) ? null : transactionAction;
+        LiveData<List<TransactionLogEntity>> source = logRepository.getTransactionLogs(actionFilter, null, null);
+
+        if (transactionSource != null) {
+            transactionLogs.removeSource(transactionSource);
+        }
+
+        transactionSource = source;
+        transactionLogs.addSource(source, logs -> transactionLogs.setValue(filterTransactionLogs(logs, transactionSearch)));
     }
 
     private void applyActivityFilters() {
-        activityLogs.setValue(filter(TYPE_ACTIVITY, activitySearch, activityAction));
+        String actionFilter = ACTION_ALL.equalsIgnoreCase(activityAction) ? null : activityAction;
+        LiveData<List<ActivityLogEntity>> source = logRepository.getActivityLogs(actionFilter, null, null);
+
+        if (activitySource != null) {
+            activityLogs.removeSource(activitySource);
+        }
+
+        activitySource = source;
+        activityLogs.addSource(source, logs -> activityLogs.setValue(filterActivityLogs(logs, activitySearch)));
     }
 
-    private List<LogEntry> filter(String type, String query, String action) {
+    private List<LogEntry> filterTransactionLogs(List<TransactionLogEntity> logs, String query) {
         List<LogEntry> result = new ArrayList<>();
-        String normalizedAction = action == null ? ACTION_ALL : action.trim();
+        if (logs == null) {
+            return result;
+        }
 
-        for (LogEntry entry : allLogs) {
-            if (!type.equals(entry.type)) {
-                continue;
-            }
-
-            if (!ACTION_ALL.equalsIgnoreCase(normalizedAction)
-                    && !entry.action.equalsIgnoreCase(normalizedAction)) {
-                continue;
-            }
-
+        for (TransactionLogEntity entity : logs) {
+            LogEntry entry = new LogEntry(
+                    entity.getId(),
+                    TYPE_TRANSACTION,
+                    entity.getAction(),
+                    entity.getPerformedBy(),
+                    entity.getDetails(),
+                    entity.getCreatedAt()
+            );
             if (!query.isEmpty() && !matchesQuery(entry, query)) {
                 continue;
             }
-
             result.add(entry);
         }
+        return result;
+    }
 
+    private List<LogEntry> filterActivityLogs(List<ActivityLogEntity> logs, String query) {
+        List<LogEntry> result = new ArrayList<>();
+        if (logs == null) {
+            return result;
+        }
+
+        for (ActivityLogEntity entity : logs) {
+            LogEntry entry = new LogEntry(
+                    entity.getId(),
+                    TYPE_ACTIVITY,
+                    entity.getAction(),
+                    entity.getPerformedBy(),
+                    entity.getDetails(),
+                    entity.getCreatedAt()
+            );
+            if (!query.isEmpty() && !matchesQuery(entry, query)) {
+                continue;
+            }
+            result.add(entry);
+        }
         return result;
     }
 
@@ -141,19 +200,5 @@ public class LogsViewModel extends AndroidViewModel {
 
     private String normalize(String input) {
         return input == null ? "" : input.trim().toLowerCase(Locale.US);
-    }
-
-    private List<LogEntry> seedLogs() {
-        List<LogEntry> seed = new ArrayList<>();
-
-        seed.add(new LogEntry(1001, TYPE_TRANSACTION, "Borrowed", "Sarah Chen", "Borrowed Projector - Epson EB-X41", "Mar 20, 2026 09:15 AM"));
-        seed.add(new LogEntry(1002, TYPE_TRANSACTION, "Returned", "Mark Santos", "Returned Camera - Canon EOS R6", "Mar 20, 2026 10:42 AM"));
-        seed.add(new LogEntry(1003, TYPE_TRANSACTION, "Borrowed", "Emily Rodriguez", "Borrowed Laptop - Dell XPS 15", "Mar 19, 2026 03:10 PM"));
-
-        seed.add(new LogEntry(2001, TYPE_ACTIVITY, "Added", "System Staff", "Added inventory item: Wireless Presenter", "Mar 19, 2026 09:00 AM"));
-        seed.add(new LogEntry(2002, TYPE_ACTIVITY, "Updated", "Admin User", "Updated student profile: 2024-12345", "Mar 18, 2026 01:23 PM"));
-        seed.add(new LogEntry(2003, TYPE_ACTIVITY, "Deleted", "System Staff", "Deleted inventory item: Old HDMI Cable", "Mar 17, 2026 04:50 PM"));
-
-        return seed;
     }
 }
