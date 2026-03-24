@@ -15,6 +15,8 @@ use App\Repositories\Interfaces\BorrowRecordRepositoryInterface;
 use App\Repositories\Eloquent\EloquentBorrowRecordRepository;
 use App\Repositories\Interfaces\DashboardRepositoryInterface;
 use App\Repositories\Eloquent\DashboardRepository;
+use App\Repositories\Interfaces\CourseRepositoryInterface;
+use App\Repositories\Eloquent\CourseRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -46,6 +48,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             DashboardRepositoryInterface::class,
             DashboardRepository::class
+        );
+
+        $this->app->bind(
+            CourseRepositoryInterface::class,
+            CourseRepository::class
         );
     }
 

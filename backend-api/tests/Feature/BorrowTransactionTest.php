@@ -37,13 +37,16 @@ class BorrowTransactionTest extends TestCase
     public function test_can_lookup_student_by_number()
     {
         $response = $this->actingAs($this->staff)
-
             ->getJson("/api/v1/students/{$this->student->student_number}");
 
         $response->assertStatus(200)
             ->assertJsonPath(
                 'data.student_number',
                 $this->student->student_number
+            )
+            ->assertJsonPath(
+                'data.course',
+                $this->student->course->name
             );
     }
 
@@ -60,7 +63,8 @@ class BorrowTransactionTest extends TestCase
         $response = $this->actingAs($this->staff)
             ->postJson('/api/v1/transactions/borrow', $payload);
 
-        $response->assertStatus(201);
+        $response->assertStatus(201)
+            ->assertJsonPath('data.student.course', $this->student->course->name);
 
         $this->assertDatabaseHas('borrow_records', [
             'student_id' => $this->student->id,

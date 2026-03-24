@@ -105,7 +105,7 @@ class DashboardTest extends TestCase
                     'recent_transactions' => [
                         '*' => [
                             'id',
-                            'student' => ['id', 'name', 'student_number'],
+                            'student' => ['id', 'name', 'student_number', 'course'],
                             'items' => [
                                 '*' => ['id', 'name']
                             ],
@@ -124,5 +124,6 @@ class DashboardTest extends TestCase
         $this->assertEquals(3, $data['currently_borrowed']); // 2 from first record, 1 from second record
         $this->assertEquals(1, $data['due_today']); // only record 1 is due today
         $this->assertCount(2, $data['recent_transactions']);
+        $this->assertEquals($this->course->name, $data['recent_transactions'][0]['student']['course']);
     }
 }

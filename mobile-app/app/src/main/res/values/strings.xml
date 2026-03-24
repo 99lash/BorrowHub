@@ -185,8 +185,8 @@
     <string name="return_dialog_section_items">Items Information</string>
     <string name="return_dialog_section_time">Time Information</string>
     <string name="return_dialog_label_name">Student Name</string>
-    <string name="return_dialog_label_number">Student / Employee No.</string>
-    <string name="return_dialog_label_course">Course / Department</string>
+    <string name="return_dialog_label_number">Student Number</string>
+    <string name="return_dialog_label_course">Course</string>
     <string name="return_dialog_label_collateral">Collateral</string>
     <string name="return_dialog_label_borrow_date">Borrow Date &amp; Time</string>
     <string name="return_dialog_borrow_datetime_format">%1$s at %2$s</string>

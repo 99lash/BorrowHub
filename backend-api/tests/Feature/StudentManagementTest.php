@@ -51,7 +51,8 @@ class StudentManagementTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.student_number', '2023-0001');
+            ->assertJsonPath('data.0.student_number', '2023-0001')
+            ->assertJsonPath('data.0.course', $this->course->name);
     }
 
     public function test_can_create_student()
@@ -66,7 +67,8 @@ class StudentManagementTest extends TestCase
             ->postJson('/api/v1/students', $data);
 
         $response->assertStatus(201)
-            ->assertJsonPath('data.student_number', '2023-1234');
+            ->assertJsonPath('data.student_number', '2023-1234')
+            ->assertJsonPath('data.course', $this->course->name);
 
         $this->assertDatabaseHas('students', $data);
     }
@@ -96,7 +98,8 @@ class StudentManagementTest extends TestCase
             ->getJson("/api/v1/students/{$student->id}");
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.id', $student->id);
+            ->assertJsonPath('data.id', $student->id)
+            ->assertJsonPath('data.course', $this->course->name);
     }
 
     public function test_can_view_student_by_student_number()
@@ -110,7 +113,8 @@ class StudentManagementTest extends TestCase
             ->getJson("/api/v1/students/2023-0001");
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.id', $student->id);
+            ->assertJsonPath('data.id', $student->id)
+            ->assertJsonPath('data.course', $this->course->name);
     }
 
     public function test_can_update_student()
@@ -122,7 +126,8 @@ class StudentManagementTest extends TestCase
             ->putJson("/api/v1/students/{$student->id}", $updatedData);
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.name', 'Updated Name');
+            ->assertJsonPath('data.name', 'Updated Name')
+            ->assertJsonPath('data.course', $this->course->name);
 
         $this->assertDatabaseHas('students', array_merge(['id' => $student->id], $updatedData));
     }

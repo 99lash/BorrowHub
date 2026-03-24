@@ -52,7 +52,8 @@ class ReturnTransactionTest extends TestCase
             ->getJson("/api/v1/transactions/active?student_number=2023-00001");
 
         $response->assertStatus(200)
-            ->assertJsonCount(1, 'data');
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.student.course', $this->student->course->name);
     }
 
     public function test_can_process_return_transaction()
@@ -61,7 +62,8 @@ class ReturnTransactionTest extends TestCase
             ->postJson("/api/v1/transactions/{$this->borrowRecord->id}/return");
 
         $response->assertStatus(200)
-            ->assertJsonPath('data.status', 'returned');
+            ->assertJsonPath('data.status', 'returned')
+            ->assertJsonPath('data.student.course', $this->student->course->name);
 
         $this->item->refresh();
         $this->assertEquals(10, $this->item->available_quantity);
