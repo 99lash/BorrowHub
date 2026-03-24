@@ -31,6 +31,7 @@ public class BorrowItemFragment extends Fragment {
     private TransactionViewModel viewModel;
     private BorrowItemRowAdapter rowAdapter;
     private ArrayAdapter<String> courseAdapter;
+    private ArrayAdapter<String> collateralAdapter;
 
     @Nullable
     @Override
@@ -49,6 +50,7 @@ public class BorrowItemFragment extends Fragment {
 
         setupInfoCard();
         setupCourseDropdown();
+        setupCollateralDropdown();
         setupStudentLookup();
         setupItemRows();
         setupSubmitButton();
@@ -104,7 +106,7 @@ public class BorrowItemFragment extends Fragment {
             String studentNumber = getText(binding.etStudentNumber);
             String studentName = getText(binding.etStudentName);
             String course = getAutoCompleteText(binding.acCourse);
-            String collateral = getText(binding.etCollateral);
+            String collateral = getAutoCompleteText(binding.acCollateral);
             viewModel.submitBorrow(studentNumber, studentName, course, collateral);
         });
     }
@@ -217,6 +219,16 @@ public class BorrowItemFragment extends Fragment {
                 new ArrayList<>()
         );
         binding.acCourse.setAdapter(courseAdapter);
+    }
+
+    private void setupCollateralDropdown() {
+        String[] defaultCollaterals = {"Student ID", "Valid ID"};
+        collateralAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                defaultCollaterals
+        );
+        binding.acCollateral.setAdapter(collateralAdapter);
     }
 
     @Override

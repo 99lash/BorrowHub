@@ -253,36 +253,34 @@
                     <!-- Course (auto-filled from student lookup) -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilCourse"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:hint="@string/transaction_course_label"
-                        app:endIconMode="dropdown_menu">
+                        android:hint="@string/transaction_course_label">
 
                         <AutoCompleteTextView
                             android:id="@+id/acCourse"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:contentDescription="@string/transaction_course_label"
-                            android:inputType="none" />
+                            android:inputType="text" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- Collateral -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilCollateral"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:hint="@string/transaction_collateral_label">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etCollateral"
+                        <AutoCompleteTextView
+                            android:id="@+id/acCollateral"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="text"
-                            android:maxLines="1" />
+                            android:inputType="text" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
