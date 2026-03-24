@@ -11,6 +11,7 @@ import com.example.borrowhub.data.remote.dto.CategoryDTO;
 import com.example.borrowhub.data.remote.dto.CreateItemRequestDTO;
 import com.example.borrowhub.data.remote.dto.UpdateItemRequestDTO;
 import com.example.borrowhub.data.remote.dto.StudentDTO;
+import com.example.borrowhub.data.remote.dto.CourseDTO;
 import com.example.borrowhub.data.remote.dto.CreateStudentRequestDTO;
 import com.example.borrowhub.data.remote.dto.UpdateStudentRequestDTO;
 import com.example.borrowhub.data.remote.dto.ImportStudentsRequestDTO;
@@ -107,6 +108,9 @@ public interface ApiService {
     // Student Management
     @GET("api/v1/students")
     Call<ApiResponseDTO<List<StudentDTO>>> getStudents(@Header("Authorization") String token);
+
+    @GET("api/v1/courses")
+    Call<ApiResponseDTO<List<CourseDTO>>> getCourses(@Header("Authorization") String token);
 
     @GET("api/v1/students/{id}")
     Call<ApiResponseDTO<StudentDTO>> getStudent(@Header("Authorization") String token, @Path("id") String idOrNumber);

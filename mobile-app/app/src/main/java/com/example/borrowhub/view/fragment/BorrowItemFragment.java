@@ -6,6 +6,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +21,8 @@ import com.example.borrowhub.view.adapter.BorrowItemRowAdapter;
 import com.example.borrowhub.viewmodel.TransactionViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
+
 public class BorrowItemFragment extends Fragment {
 
     private static final long SUCCESS_DISPLAY_MS = 2500;
@@ -26,6 +30,8 @@ public class BorrowItemFragment extends Fragment {
     private FragmentBorrowItemBinding binding;
     private TransactionViewModel viewModel;
     private BorrowItemRowAdapter rowAdapter;
+    private ArrayAdapter<String> courseAdapter;
+    private ArrayAdapter<String> collateralAdapter;
 
     @Nullable
     @Override
@@ -43,6 +49,8 @@ public class BorrowItemFragment extends Fragment {
         viewModel = new ViewModelProvider(requireParentFragment()).get(TransactionViewModel.class);
 
         setupInfoCard();
+        setupCourseDropdown();
+        setupCollateralDropdown();
         setupStudentLookup();
         setupItemRows();
         setupSubmitButton();
@@ -97,8 +105,8 @@ public class BorrowItemFragment extends Fragment {
         binding.btnSubmitBorrow.setOnClickListener(v -> {
             String studentNumber = getText(binding.etStudentNumber);
             String studentName = getText(binding.etStudentName);
-            String course = getText(binding.etCourse);
-            String collateral = getText(binding.etCollateral);
+            String course = getAutoCompleteText(binding.acCourse);
+            String collateral = getAutoCompleteText(binding.acCollateral);
             viewModel.submitBorrow(studentNumber, studentName, course, collateral);
         });
     }
@@ -113,8 +121,18 @@ public class BorrowItemFragment extends Fragment {
 
         // Auto-fill course when a matching student number is found
         viewModel.getCourse().observe(getViewLifecycleOwner(), course -> {
-            if (course != null && !course.equals(getText(binding.etCourse))) {
-                binding.etCourse.setText(course);
+            if (course != null && !course.equals(getAutoCompleteText(binding.acCourse))) {
+                binding.acCourse.setText(course, false);
+            }
+        });
+
+        viewModel.getAvailableCourses().observe(getViewLifecycleOwner(), courses -> {
+            if (courseAdapter != null) {
+                courseAdapter.clear();
+                if (courses != null) {
+                    courseAdapter.addAll(courses);
+                }
+                courseAdapter.notifyDataSetChanged();
             }
         });
 
@@ -187,6 +205,30 @@ public class BorrowItemFragment extends Fragment {
     private String getText(TextInputEditText editText) {
         CharSequence text = editText.getText();
         return text == null ? "" : text.toString().trim();
+    }
+
+    private String getAutoCompleteText(AutoCompleteTextView textView) {
+        CharSequence text = textView.getText();
+        return text == null ? "" : text.toString().trim();
+    }
+
+    private void setupCourseDropdown() {
+        courseAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                new ArrayList<>()
+        );
+        binding.acCourse.setAdapter(courseAdapter);
+    }
+
+    private void setupCollateralDropdown() {
+        String[] defaultCollaterals = {"Student ID", "Valid ID"};
+        collateralAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                defaultCollaterals
+        );
+        binding.acCollateral.setAdapter(collateralAdapter);
     }
 
     @Override

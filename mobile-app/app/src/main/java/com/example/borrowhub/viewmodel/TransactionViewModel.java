@@ -86,6 +86,7 @@ public class TransactionViewModel extends AndroidViewModel {
     // --- State: Borrow Workflow ---
     private final MutableLiveData<String> studentNameInput = new MutableLiveData<>("");
     private final MutableLiveData<String> courseInput = new MutableLiveData<>("");
+    private final MutableLiveData<List<String>> availableCourses = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<Long> studentIdFound = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> studentFound = new MutableLiveData<>(false);
     private final MutableLiveData<List<ItemRow>> itemRows = new MutableLiveData<>(new ArrayList<>());
@@ -126,6 +127,8 @@ public class TransactionViewModel extends AndroidViewModel {
         initial.add(new ItemRow());
         itemRows.setValue(initial);
 
+        refreshCourses();
+
         // Fetch initial active transactions
         fetchActiveTransactions();
     }
@@ -133,6 +136,7 @@ public class TransactionViewModel extends AndroidViewModel {
     // --- Getters: Borrow Workflow ---
     public LiveData<String> getStudentName() { return studentNameInput; }
     public LiveData<String> getCourse() { return courseInput; }
+    public LiveData<List<String>> getAvailableCourses() { return availableCourses; }
     public LiveData<Boolean> isStudentFound() { return studentFound; }
     public LiveData<List<ItemRow>> getItemRows() { return itemRows; }
     public LiveData<Boolean> isSubmitted() { return submitted; }
@@ -353,6 +357,12 @@ public class TransactionViewModel extends AndroidViewModel {
 
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    private void refreshCourses() {
+        studentRepository.refreshCoursesFromApi(courseNames ->
+                availableCourses.postValue(courseNames != null ? courseNames : new ArrayList<>())
+        );
     }
 
     public String getCurrentDateTime() {
