@@ -32,10 +32,16 @@ public class StudentManagementViewModel extends AndroidViewModel {
     private String normalizedSearchQuery = "";
 
     public StudentManagementViewModel(@NonNull Application application) {
+        this(application, new StudentRepository(
+                AppDatabase.getInstance(application),
+                new SessionManager(application)
+        ));
+    }
+
+    public StudentManagementViewModel(@NonNull Application application,
+                                      @NonNull StudentRepository studentRepository) {
         super(application);
-        AppDatabase database = AppDatabase.getInstance(application);
-        SessionManager sessionManager = new SessionManager(application);
-        repository = new StudentRepository(database, sessionManager);
+        repository = studentRepository;
         studentsLiveData = repository.getAllStudents();
         studentsObserver = students -> {
             allStudents = students == null ? new ArrayList<>() : students;
@@ -79,12 +85,15 @@ public class StudentManagementViewModel extends AndroidViewModel {
         repository.createStudent(studentNumber.trim(), name.trim(), course.trim(), new StudentRepository.OperationCallback() {
             @Override
             public void onSuccess() {
+                triggerStudentsSync();
                 operationSuccess.postValue(true);
+                operationError.postValue(null);
                 refreshCourses();
             }
 
             @Override
             public void onError(String errorMessage) {
+                operationSuccess.postValue(null);
                 operationError.postValue(errorMessage == null ? "Failed to add student" : errorMessage);
             }
         });
@@ -94,12 +103,15 @@ public class StudentManagementViewModel extends AndroidViewModel {
         repository.updateStudent(id, studentNumber.trim(), name.trim(), course.trim(), new StudentRepository.OperationCallback() {
             @Override
             public void onSuccess() {
+                triggerStudentsSync();
                 operationSuccess.postValue(true);
+                operationError.postValue(null);
                 refreshCourses();
             }
 
             @Override
             public void onError(String errorMessage) {
+                operationSuccess.postValue(null);
                 operationError.postValue(errorMessage == null ? "Failed to update student" : errorMessage);
             }
         });
@@ -109,12 +121,15 @@ public class StudentManagementViewModel extends AndroidViewModel {
         repository.deleteStudent(id, new StudentRepository.OperationCallback() {
             @Override
             public void onSuccess() {
+                triggerStudentsSync();
                 operationSuccess.postValue(true);
+                operationError.postValue(null);
                 refreshCourses();
             }
 
             @Override
             public void onError(String errorMessage) {
+                operationSuccess.postValue(null);
                 operationError.postValue(errorMessage == null ? "Failed to delete student" : errorMessage);
             }
         });
@@ -130,12 +145,15 @@ public class StudentManagementViewModel extends AndroidViewModel {
         repository.importStudents(requests, new StudentRepository.OperationCallback() {
             @Override
             public void onSuccess() {
+                triggerStudentsSync();
                 operationSuccess.postValue(true);
+                operationError.postValue(null);
                 refreshCourses();
             }
 
             @Override
             public void onError(String errorMessage) {
+                operationSuccess.postValue(null);
                 operationError.postValue(errorMessage == null ? "Failed to import students" : errorMessage);
             }
         });
@@ -155,6 +173,10 @@ public class StudentManagementViewModel extends AndroidViewModel {
 
     private void observeStudents() {
         studentsLiveData.observeForever(studentsObserver);
+    }
+
+    private void triggerStudentsSync() {
+        repository.getAllStudents();
     }
 
     private void refreshCourses() {
