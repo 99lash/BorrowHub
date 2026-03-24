@@ -74,7 +74,7 @@
             android:contentDescription="@string/student_content_desc_edit"
             android:padding="8dp"
             android:src="@drawable/ic_edit"
-            app:tint="@color/primary_crimson" />
+            app:tint="@color/student_course_badge_text" />
 
         <ImageButton
             android:id="@+id/btnDelete"
@@ -85,7 +85,7 @@
             android:contentDescription="@string/student_content_desc_delete"
             android:padding="8dp"
             android:src="@drawable/ic_delete"
-            app:tint="@color/inventory_status_maintenance_text" />
+            app:tint="@color/color_error" />
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
