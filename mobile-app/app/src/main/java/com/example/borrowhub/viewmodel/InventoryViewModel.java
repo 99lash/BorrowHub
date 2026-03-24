@@ -41,10 +41,12 @@ public class InventoryViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
     public InventoryViewModel(@NonNull Application application) {
+        this(application, new ItemRepository(AppDatabase.getInstance(application), new SessionManager(application)));
+    }
+
+    public InventoryViewModel(@NonNull Application application, ItemRepository repository) {
         super(application);
-        AppDatabase db = AppDatabase.getInstance(application);
-        SessionManager sessionManager = new SessionManager(application);
-        repository = new ItemRepository(db, sessionManager);
+        this.repository = repository;
 
         allItems = repository.getAllItems();
         allCategories = repository.getAllCategories();
