@@ -263,6 +263,10 @@ public class StudentRepository {
         });
     }
 
+    public void refreshStudentsFromApi() {
+        syncStudentsFromApi();
+    }
+
     private void syncStudentsFromApi() {
         String token = getAuthHeader();
 

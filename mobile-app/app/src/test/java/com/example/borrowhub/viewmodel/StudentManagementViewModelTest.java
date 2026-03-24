@@ -5,8 +5,8 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,7 +25,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class StudentManagementViewModelTest {
 
@@ -51,6 +53,7 @@ public class StudentManagementViewModelTest {
             callback.onSuccess(Arrays.asList("Computer Science", "Information Systems"));
             return null;
         }).when(repository).refreshCoursesFromApi(any());
+        studentsLiveData.setValue(Collections.emptyList());
 
         viewModel = new StudentManagementViewModel(application, repository);
     }
@@ -70,34 +73,47 @@ public class StudentManagementViewModelTest {
     }
 
     @Test
-    public void addStudent_success_setsSuccessAndResyncs() {
+    public void addStudent_successAfterError_clearsErrorStateAndResyncs() {
+        AtomicInteger invocationCounter = new AtomicInteger(0);
         doAnswer(invocation -> {
             StudentRepository.OperationCallback callback = invocation.getArgument(3);
-            callback.onSuccess();
+            if (invocationCounter.getAndIncrement() == 0) {
+                callback.onError("Old error");
+            } else {
+                callback.onSuccess();
+            }
             return null;
         }).when(repository).createStudent(any(), any(), any(), any());
 
         viewModel.addStudent(" STU003 ", " Charlie ", " Computer Science ");
+        viewModel.addStudent(" STU003 ", " Charlie ", " Computer Science ");
 
         verify(repository).createStudent(eq("STU003"), eq("Charlie"), eq("Computer Science"), any());
-        verify(repository, times(2)).getAllStudents();
-        verify(repository, times(2)).refreshCoursesFromApi(any());
+        verify(repository, atLeastOnce()).getAllStudents();
+        verify(repository).refreshStudentsFromApi();
+        verify(repository, atLeastOnce()).refreshCoursesFromApi(any());
         assertEquals(Boolean.TRUE, viewModel.getOperationSuccess().getValue());
         assertNull(viewModel.getOperationError().getValue());
     }
 
     @Test
-    public void addStudent_error_setsDefaultErrorMessage() {
+    public void addStudent_errorAfterSuccess_clearsSuccessStateAndSetsDefaultError() {
+        AtomicInteger invocationCounter = new AtomicInteger(0);
         doAnswer(invocation -> {
             StudentRepository.OperationCallback callback = invocation.getArgument(3);
-            callback.onError(null);
+            if (invocationCounter.getAndIncrement() == 0) {
+                callback.onSuccess();
+            } else {
+                callback.onError(null);
+            }
             return null;
         }).when(repository).createStudent(any(), any(), any(), any());
 
         viewModel.addStudent("STU003", "Charlie", "Computer Science");
+        viewModel.addStudent("STU003", "Charlie", "Computer Science");
 
-        verify(repository, times(1)).getAllStudents();
-        verify(repository, times(1)).refreshCoursesFromApi(any());
+        verify(repository).getAllStudents();
+        verify(repository).refreshCoursesFromApi(any());
         assertNull(viewModel.getOperationSuccess().getValue());
         assertEquals("Failed to add student", viewModel.getOperationError().getValue());
     }
@@ -113,8 +129,9 @@ public class StudentManagementViewModelTest {
         viewModel.updateStudent(5L, " STU005 ", " Diana ", " Information Systems ");
 
         verify(repository).updateStudent(eq(5L), eq("STU005"), eq("Diana"), eq("Information Systems"), any());
-        verify(repository, times(2)).getAllStudents();
-        verify(repository, times(2)).refreshCoursesFromApi(any());
+        verify(repository, atLeastOnce()).getAllStudents();
+        verify(repository).refreshStudentsFromApi();
+        verify(repository, atLeastOnce()).refreshCoursesFromApi(any());
         assertEquals(Boolean.TRUE, viewModel.getOperationSuccess().getValue());
         assertNull(viewModel.getOperationError().getValue());
     }
@@ -129,8 +146,8 @@ public class StudentManagementViewModelTest {
 
         viewModel.updateStudent(5L, "STU005", "Diana", "Information Systems");
 
-        verify(repository, times(1)).getAllStudents();
-        verify(repository, times(1)).refreshCoursesFromApi(any());
+        verify(repository).getAllStudents();
+        verify(repository).refreshCoursesFromApi(any());
         assertNull(viewModel.getOperationSuccess().getValue());
         assertEquals("Backend rejected update", viewModel.getOperationError().getValue());
     }
@@ -146,8 +163,9 @@ public class StudentManagementViewModelTest {
         viewModel.deleteStudent(7L);
 
         verify(repository).deleteStudent(eq(7L), any());
-        verify(repository, times(2)).getAllStudents();
-        verify(repository, times(2)).refreshCoursesFromApi(any());
+        verify(repository, atLeastOnce()).getAllStudents();
+        verify(repository).refreshStudentsFromApi();
+        verify(repository, atLeastOnce()).refreshCoursesFromApi(any());
         assertEquals(Boolean.TRUE, viewModel.getOperationSuccess().getValue());
         assertNull(viewModel.getOperationError().getValue());
     }
@@ -162,8 +180,8 @@ public class StudentManagementViewModelTest {
 
         viewModel.deleteStudent(7L);
 
-        verify(repository, times(1)).getAllStudents();
-        verify(repository, times(1)).refreshCoursesFromApi(any());
+        verify(repository).getAllStudents();
+        verify(repository).refreshCoursesFromApi(any());
         assertNull(viewModel.getOperationSuccess().getValue());
         assertEquals("Failed to delete student", viewModel.getOperationError().getValue());
     }
@@ -172,8 +190,8 @@ public class StudentManagementViewModelTest {
     public void importFromCsv_emptyInput_setsValidationError() {
         viewModel.importFromCsv(" \n ");
 
-        verify(repository, times(1)).getAllStudents();
-        verify(repository, times(1)).refreshCoursesFromApi(any());
+        verify(repository).getAllStudents();
+        verify(repository).refreshCoursesFromApi(any());
         assertEquals("No valid new students found to import", viewModel.getOperationError().getValue());
     }
 

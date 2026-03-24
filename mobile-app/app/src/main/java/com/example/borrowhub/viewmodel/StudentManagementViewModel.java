@@ -176,7 +176,7 @@ public class StudentManagementViewModel extends AndroidViewModel {
     }
 
     private void triggerStudentsSync() {
-        repository.getAllStudents();
+        repository.refreshStudentsFromApi();
     }
 
     private void refreshCourses() {
