@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             StudentSeeder::class,
             CategorySeeder::class,
             ItemSeeder::class,
-            BorrowRecordSeeder::class,
+            // BorrowRecordSeeder::class,
         ]);
     }
 }
