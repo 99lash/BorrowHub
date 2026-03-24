@@ -3,6 +3,7 @@ package com.example.borrowhub.viewmodel;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.reset;
 
 import android.app.Application;
 
@@ -62,7 +63,7 @@ public class AccountSettingsViewModelTest {
         viewModel.getOperationSuccess().observeForever(mockSuccessObserver);
 
         // Reset observers to ignore initial LiveData values
-        org.mockito.Mockito.reset(mockLoadingObserver, mockErrorObserver, mockSuccessObserver);
+        reset(mockLoadingObserver, mockErrorObserver, mockSuccessObserver);
     }
 
     @Test
@@ -89,6 +90,29 @@ public class AccountSettingsViewModelTest {
 
         verify(mockLoadingObserver).onChanged(false);
         verify(mockSuccessObserver).onChanged("Profile updated successfully.");
+    }
+
+
+    @Test
+    public void updateProfile_trimsInputsBeforeRepositoryCall() {
+        MutableLiveData<Boolean> repoResult = new MutableLiveData<>();
+        when(mockUserRepository.updateProfile(anyString(), anyString())).thenReturn(repoResult);
+
+        viewModel.updateProfile("  Name  ", "  user  ");
+
+        verify(mockUserRepository).updateProfile("Name", "user");
+    }
+
+    @Test
+    public void changePassword_success_emitsSuccessAndClearsError() {
+        MutableLiveData<Boolean> repoResult = new MutableLiveData<>();
+        when(mockUserRepository.changePassword(anyString(), anyString(), anyString())).thenReturn(repoResult);
+
+        viewModel.changePassword("old", "new", "new");
+        repoResult.setValue(true);
+
+        verify(mockSuccessObserver).onChanged("Password updated successfully.");
+        verify(mockErrorObserver).onChanged(null);
     }
 
     @Test
