@@ -257,14 +257,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:hint="@string/transaction_course_label">
+                        android:hint="@string/transaction_course_label"
+                        app:endIconMode="dropdown_menu">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etCourse"
+                        <AutoCompleteTextView
+                            android:id="@+id/acCourse"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="text"
-                            android:maxLines="1" />
+                            android:inputType="none" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- Collateral -->

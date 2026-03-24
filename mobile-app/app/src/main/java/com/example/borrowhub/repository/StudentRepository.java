@@ -14,6 +14,7 @@ import com.example.borrowhub.data.remote.ApiClient;
 import com.example.borrowhub.data.remote.api.ApiService;
 import com.example.borrowhub.data.remote.dto.ApiResponseDTO;
 import com.example.borrowhub.data.remote.dto.StudentDTO;
+import com.example.borrowhub.data.remote.dto.CourseDTO;
 import com.example.borrowhub.data.remote.dto.CreateStudentRequestDTO;
 import com.example.borrowhub.data.remote.dto.UpdateStudentRequestDTO;
 import com.example.borrowhub.data.remote.dto.ImportStudentsRequestDTO;
@@ -383,6 +384,53 @@ public class StudentRepository {
 
             if (callback != null) {
                 callback.onSuccess(courseNames);
+            }
+        });
+    }
+
+    public void refreshCoursesFromApi(CoursesCallback callback) {
+        String token = getAuthHeader();
+
+        apiService.getCourses(token).enqueue(new Callback<ApiResponseDTO<List<CourseDTO>>>() {
+            @Override
+            public void onResponse(Call<ApiResponseDTO<List<CourseDTO>>> call,
+                                   Response<ApiResponseDTO<List<CourseDTO>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    List<CourseDTO> dtos = response.body().getData();
+                    List<CourseEntity> entities = new ArrayList<>();
+                    if (dtos != null) {
+                        for (CourseDTO dto : dtos) {
+                            entities.add(new CourseEntity((int) dto.getId(), dto.getName()));
+                        }
+                    }
+
+                    executorService.execute(() -> {
+                        database.runInTransaction(() -> {
+                            courseDao.deleteAll();
+                            courseDao.insertAll(entities);
+                        });
+
+                        List<String> courseNames = new ArrayList<>();
+                        for (CourseEntity course : entities) {
+                            if (course.getName() != null && !course.getName().trim().isEmpty()) {
+                                courseNames.add(course.getName());
+                            }
+                        }
+
+                        if (callback != null) {
+                            callback.onSuccess(courseNames);
+                        }
+                    });
+                } else {
+                    Log.e(TAG, "Failed to fetch courses: " + response.code());
+                    refreshCoursesFromStudents(callback);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponseDTO<List<CourseDTO>>> call, Throwable t) {
+                Log.e(TAG, "Error fetching courses", t);
+                refreshCoursesFromStudents(callback);
             }
         });
     }

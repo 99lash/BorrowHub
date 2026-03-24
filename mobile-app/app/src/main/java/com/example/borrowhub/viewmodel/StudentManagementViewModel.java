@@ -158,7 +158,7 @@ public class StudentManagementViewModel extends AndroidViewModel {
     }
 
     private void refreshCourses() {
-        repository.refreshCoursesFromStudents(courseNames -> availableCourses.postValue(courseNames));
+        repository.refreshCoursesFromApi(courseNames -> availableCourses.postValue(courseNames));
     }
 
     private void applyFilters() {
