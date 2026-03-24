@@ -72,16 +72,27 @@ public class UserManagementViewModel extends AndroidViewModel {
     }
 
     public void addUser(String name, String username, String role) {
+        beginOperation();
         observeResult(repository.createUser(name.trim(), username.trim(), role.trim(), DEFAULT_PASSWORD),
                 "Failed to create user");
     }
 
     public void updateUser(User existingUser, String name, String username, String role) {
+        beginOperation();
+        if (existingUser == null) {
+            operationError.setValue("Failed to update user");
+            return;
+        }
         observeResult(repository.updateUser(existingUser.getId(), name.trim(), username.trim(), role.trim()),
                 "Failed to update user");
     }
 
     public void deleteUser(User user) {
+        beginOperation();
+        if (user == null) {
+            operationError.setValue("Failed to delete user");
+            return;
+        }
         if (isProtectedAdmin(user)) {
             operationError.setValue("Cannot delete the admin user");
             return;
@@ -90,6 +101,11 @@ public class UserManagementViewModel extends AndroidViewModel {
     }
 
     public void resetPasswordToDefault(User user) {
+        beginOperation();
+        if (user == null) {
+            operationError.setValue("Failed to reset password");
+            return;
+        }
         observeResult(repository.resetPassword(user.getId(), DEFAULT_PASSWORD, DEFAULT_PASSWORD),
                 "Failed to reset password");
     }
@@ -101,21 +117,33 @@ public class UserManagementViewModel extends AndroidViewModel {
     }
 
     private <T> void observeResult(LiveData<UserRepository.Result<T>> liveData, String defaultError) {
+        if (liveData == null) {
+            operationError.setValue(defaultError);
+            return;
+        }
+
         Observer<UserRepository.Result<T>> observer = new Observer<UserRepository.Result<T>>() {
             @Override
             public void onChanged(UserRepository.Result<T> result) {
                 liveData.removeObserver(this);
                 if (result != null && result.isSuccess()) {
+                    operationError.setValue(null);
                     operationSuccess.setValue(true);
                 } else {
                     String error = (result == null || result.getError() == null || result.getError().trim().isEmpty())
                             ? defaultError
                             : result.getError();
+                    operationSuccess.setValue(null);
                     operationError.setValue(error);
                 }
             }
         };
         liveData.observeForever(observer);
+    }
+
+    private void beginOperation() {
+        operationSuccess.setValue(null);
+        operationError.setValue(null);
     }
 
     private void observeUsers() {
