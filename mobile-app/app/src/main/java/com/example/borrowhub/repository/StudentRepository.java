@@ -44,6 +44,7 @@ import retrofit2.Response;
  */
 public class StudentRepository {
     private static final String TAG = "StudentRepository";
+    private static final int MAX_INT_ID = Integer.MAX_VALUE;
 
     private final StudentDao studentDao;
     private final CourseDao courseDao;
@@ -400,7 +401,12 @@ public class StudentRepository {
                     List<CourseEntity> entities = new ArrayList<>();
                     if (dtos != null) {
                         for (CourseDTO dto : dtos) {
-                            entities.add(new CourseEntity((int) dto.getId(), dto.getName()));
+                            long courseId = dto.getId();
+                            if (courseId < 0 || courseId > MAX_INT_ID) {
+                                Log.e(TAG, "Skipping course with unsupported ID range: " + courseId);
+                                continue;
+                            }
+                            entities.add(new CourseEntity((int) courseId, dto.getName()));
                         }
                     }
 

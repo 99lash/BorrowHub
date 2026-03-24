@@ -48,6 +48,7 @@ public class BorrowItemFragment extends Fragment {
         viewModel = new ViewModelProvider(requireParentFragment()).get(TransactionViewModel.class);
 
         setupInfoCard();
+        setupCourseDropdown();
         setupStudentLookup();
         setupItemRows();
         setupSubmitButton();
@@ -59,7 +60,6 @@ public class BorrowItemFragment extends Fragment {
     }
 
     private void setupStudentLookup() {
-        setupCourseDropdown();
         binding.etStudentNumber.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

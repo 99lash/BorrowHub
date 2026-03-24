@@ -363,7 +363,7 @@ public class TransactionViewModel extends AndroidViewModel {
 
     private void refreshCourses() {
         studentRepository.refreshCoursesFromApi(courseNames ->
-                availableCourses.postValue(courseNames == null ? new ArrayList<>() : new ArrayList<>(courseNames))
+                availableCourses.postValue(courseNames != null ? courseNames : new ArrayList<>())
         );
     }
 
