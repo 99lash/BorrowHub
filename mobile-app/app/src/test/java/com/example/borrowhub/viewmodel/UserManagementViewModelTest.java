@@ -53,6 +53,11 @@ public class UserManagementViewModelTest {
     }
 
     @Test
+    public void init_requestsUsersFromRepository() {
+        verify(userRepository).getAllUsers();
+    }
+
+    @Test
     public void deleteUser_protectedAdmin_doesNotCallRepositoryAndPostsError() {
         User protectedAdmin = new User(1, "Administrator", "admin", "admin");
 
@@ -78,11 +83,11 @@ public class UserManagementViewModelTest {
     @Test
     public void addUser_trimsInputAndPostsSuccess() {
         MutableLiveData<UserRepository.Result<User>> createResult = new MutableLiveData<>();
-        when(userRepository.createUser(eq("New User"), eq("newuser"), eq("staff"), eq("123")))
+        when(userRepository.createUser(eq("New User"), eq("newuser"), eq("staff"), eq(UserManagementViewModel.DEFAULT_PASSWORD)))
                 .thenReturn(createResult);
 
         viewModel.addUser("  New User  ", "  newuser  ", "  staff  ");
-        verify(userRepository).createUser("New User", "newuser", "staff", "123");
+        verify(userRepository).createUser("New User", "newuser", "staff", UserManagementViewModel.DEFAULT_PASSWORD);
         assertNull(viewModel.getOperationSuccess().getValue());
         assertNull(viewModel.getOperationError().getValue());
 
@@ -117,10 +122,16 @@ public class UserManagementViewModelTest {
 
     @Test
     public void setSearchQuery_filtersByNameAndUsernameIgnoringCaseAndSpaces() {
+        usersLiveData.setValue(Arrays.asList(
+                new User(1, "Administrator", "admin", "admin"),
+                new User(2, "Staff User", "staff1", "staff")
+        ));
+
         viewModel.setSearchQuery("  STAFF  ");
         List<User> filtered = viewModel.getFilteredUsers().getValue();
-        assertEquals(1, filtered == null ? 0 : filtered.size());
-        assertEquals("staff1", filtered == null ? null : filtered.get(0).getUsername());
+        assertEquals(1, filtered.size());
+        assertEquals("staff1", filtered.get(0).getUsername());
+        assertEquals("Staff User", filtered.get(0).getName());
     }
 
     @Test

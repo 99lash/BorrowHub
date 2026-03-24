@@ -72,23 +72,23 @@ public class UserManagementViewModel extends AndroidViewModel {
     }
 
     public void addUser(String name, String username, String role) {
-        beginOperation();
-        observeResult(repository.createUser(name.trim(), username.trim(), role.trim(), DEFAULT_PASSWORD),
+        clearOperationStates();
+        observeResult(repository.createUser(safeTrim(name), safeTrim(username), safeTrim(role), DEFAULT_PASSWORD),
                 "Failed to create user");
     }
 
     public void updateUser(User existingUser, String name, String username, String role) {
-        beginOperation();
+        clearOperationStates();
         if (existingUser == null) {
             operationError.setValue("Failed to update user");
             return;
         }
-        observeResult(repository.updateUser(existingUser.getId(), name.trim(), username.trim(), role.trim()),
+        observeResult(repository.updateUser(existingUser.getId(), safeTrim(name), safeTrim(username), safeTrim(role)),
                 "Failed to update user");
     }
 
     public void deleteUser(User user) {
-        beginOperation();
+        clearOperationStates();
         if (user == null) {
             operationError.setValue("Failed to delete user");
             return;
@@ -101,7 +101,7 @@ public class UserManagementViewModel extends AndroidViewModel {
     }
 
     public void resetPasswordToDefault(User user) {
-        beginOperation();
+        clearOperationStates();
         if (user == null) {
             operationError.setValue("Failed to reset password");
             return;
@@ -117,11 +117,6 @@ public class UserManagementViewModel extends AndroidViewModel {
     }
 
     private <T> void observeResult(LiveData<UserRepository.Result<T>> liveData, String defaultError) {
-        if (liveData == null) {
-            operationError.setValue(defaultError);
-            return;
-        }
-
         Observer<UserRepository.Result<T>> observer = new Observer<UserRepository.Result<T>>() {
             @Override
             public void onChanged(UserRepository.Result<T> result) {
@@ -141,13 +136,12 @@ public class UserManagementViewModel extends AndroidViewModel {
         liveData.observeForever(observer);
     }
 
-    private void beginOperation() {
-        operationSuccess.setValue(null);
-        operationError.setValue(null);
-    }
-
     private void observeUsers() {
         usersLiveData.observeForever(usersObserver);
+    }
+
+    private String safeTrim(String value) {
+        return value == null ? "" : value.trim();
     }
 
     private void applyFilters() {
