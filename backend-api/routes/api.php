@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\StudentController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\LogController;
+use App\Http\Controllers\Api\V1\CourseController;
 
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\AccountController;
@@ -39,6 +40,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/dashboard/recent-transactions', [DashboardController::class, 'recentTransactions']);
 
         Route::get('/categories', [CategoryController::class, 'index']);
+        Route::get('/courses', [CourseController::class, 'index']);
 
         Route::apiResource('items', ItemController::class);
 
