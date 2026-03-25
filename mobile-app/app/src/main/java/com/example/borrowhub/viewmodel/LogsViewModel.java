@@ -29,14 +29,16 @@ public class LogsViewModel extends AndroidViewModel {
         public final String type;
         public final String action;
         public final String actor;
+        public final String target;
         public final String details;
         public final String timestamp;
 
-        public LogEntry(long id, String type, String action, String actor, String details, String timestamp) {
+        public LogEntry(long id, String type, String action, String actor, String target, String details, String timestamp) {
             this.id = id;
             this.type = type;
             this.action = action;
             this.actor = actor;
+            this.target = target;
             this.details = details;
             this.timestamp = timestamp;
         }
@@ -104,17 +106,17 @@ public class LogsViewModel extends AndroidViewModel {
     public List<String> getTransactionActionOptions() {
         List<String> options = new ArrayList<>();
         options.add(ACTION_ALL);
-        options.add("Borrowed");
-        options.add("Returned");
+        options.add("Items Borrowed");
+        options.add("Items Returned");
         return Collections.unmodifiableList(options);
     }
 
     public List<String> getActivityActionOptions() {
         List<String> options = new ArrayList<>();
         options.add(ACTION_ALL);
-        options.add("Added");
-        options.add("Updated");
-        options.add("Deleted");
+        options.add("Item Added");
+        options.add("Item Updated");
+        options.add("Item Deleted");
         return Collections.unmodifiableList(options);
     }
 
@@ -154,6 +156,7 @@ public class LogsViewModel extends AndroidViewModel {
                     TYPE_TRANSACTION,
                     entity.getAction(),
                     entity.getPerformedBy(),
+                    entity.getTargetUserName(),
                     entity.getDetails(),
                     entity.getCreatedAt()
             );
@@ -177,6 +180,7 @@ public class LogsViewModel extends AndroidViewModel {
                     TYPE_ACTIVITY,
                     entity.getAction(),
                     entity.getPerformedBy(),
+                    entity.getTargetUserName(),
                     entity.getDetails(),
                     entity.getCreatedAt()
             );
@@ -190,6 +194,7 @@ public class LogsViewModel extends AndroidViewModel {
 
     private boolean matchesQuery(LogEntry entry, String query) {
         return contains(entry.actor, query)
+                || contains(entry.target, query)
                 || contains(entry.details, query)
                 || contains(String.valueOf(entry.id), query);
     }
