@@ -17,7 +17,7 @@ import java.util.Locale;
 
 public class UserManagementViewModel extends AndroidViewModel {
 
-    public static final String DEFAULT_PASSWORD = "123";
+    public static final String DEFAULT_PASSWORD = "borrowhub123";
     public static final String PROTECTED_ADMIN_USERNAME = "admin";
 
     private final UserRepository repository;

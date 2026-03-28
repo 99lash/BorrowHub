@@ -71,10 +71,10 @@ public class UserManagementViewModelTest {
     public void resetPasswordToDefault_callsRepositoryWithDefaultPassword() {
         User staff = new User(2, "Staff User", "staff1", "staff");
         MutableLiveData<UserRepository.Result<Void>> resetResult = new MutableLiveData<>();
-        when(userRepository.resetPassword(eq(2), eq("123"), eq("123"))).thenReturn(resetResult);
+        when(userRepository.resetPassword(eq(2), eq("borrowhub123"), eq("borrowhub123"))).thenReturn(resetResult);
 
         viewModel.resetPasswordToDefault(staff);
-        verify(userRepository).resetPassword(2, "123", "123");
+        verify(userRepository).resetPassword(2, "borrowhub123", "borrowhub123");
 
         resetResult.setValue(new UserRepository.Result<>(null, null));
         assertEquals(Boolean.TRUE, viewModel.getOperationSuccess().getValue());
