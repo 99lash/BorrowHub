@@ -57,10 +57,13 @@ public class AccountSettingsViewModel extends AndroidViewModel {
         String trimmedUsername = username == null ? "" : username.trim();
 
         if (trimmedFullName.isEmpty() || trimmedUsername.isEmpty()) {
+            operationSuccess.setValue(null);
             operationError.setValue(getApplication().getString(R.string.account_settings_error_fields_required));
             return;
         }
 
+        operationError.setValue(null);
+        operationSuccess.setValue(null);
         isLoading.setValue(true);
         LiveData<Boolean> repositoryResult = userRepository.updateProfile(trimmedFullName, trimmedUsername);
         Observer<Boolean> observer = new Observer<Boolean>() {
@@ -68,8 +71,10 @@ public class AccountSettingsViewModel extends AndroidViewModel {
             public void onChanged(Boolean success) {
                 isLoading.setValue(false);
                 if (Boolean.TRUE.equals(success)) {
+                    operationError.setValue(null);
                     operationSuccess.setValue(getApplication().getString(R.string.account_settings_profile_updated));
                 } else {
+                    operationSuccess.setValue(null);
                     operationError.setValue(getApplication().getString(R.string.account_settings_profile_update_failed));
                 }
                 repositoryResult.removeObserver(this);
@@ -84,14 +89,18 @@ public class AccountSettingsViewModel extends AndroidViewModel {
         String trimmedConfirmPassword = confirmNewPassword == null ? "" : confirmNewPassword.trim();
 
         if (trimmedCurrentPassword.isEmpty() || trimmedNewPassword.isEmpty() || trimmedConfirmPassword.isEmpty()) {
+            operationSuccess.setValue(null);
             operationError.setValue(getApplication().getString(R.string.account_settings_error_fields_required));
             return;
         }
         if (!trimmedNewPassword.equals(trimmedConfirmPassword)) {
+            operationSuccess.setValue(null);
             operationError.setValue(getApplication().getString(R.string.account_settings_password_mismatch));
             return;
         }
 
+        operationError.setValue(null);
+        operationSuccess.setValue(null);
         isLoading.setValue(true);
         LiveData<Boolean> repositoryResult = userRepository.changePassword(
                 trimmedCurrentPassword,
@@ -103,8 +112,10 @@ public class AccountSettingsViewModel extends AndroidViewModel {
             public void onChanged(Boolean success) {
                 isLoading.setValue(false);
                 if (Boolean.TRUE.equals(success)) {
+                    operationError.setValue(null);
                     operationSuccess.setValue(getApplication().getString(R.string.account_settings_password_updated));
                 } else {
+                    operationSuccess.setValue(null);
                     operationError.setValue(getApplication().getString(R.string.account_settings_password_update_failed));
                 }
                 repositoryResult.removeObserver(this);
