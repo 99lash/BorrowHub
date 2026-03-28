@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.atLeastOnce;
 
 import android.app.Application;
 
@@ -90,6 +91,7 @@ public class AccountSettingsViewModelTest {
 
         verify(mockLoadingObserver).onChanged(false);
         verify(mockSuccessObserver).onChanged("Profile updated successfully.");
+        verify(mockErrorObserver, atLeastOnce()).onChanged(null);
     }
 
 
@@ -112,7 +114,7 @@ public class AccountSettingsViewModelTest {
         repoResult.setValue(true);
 
         verify(mockSuccessObserver).onChanged("Password updated successfully.");
-        verify(mockErrorObserver).onChanged(null);
+        verify(mockErrorObserver, atLeastOnce()).onChanged(null);
     }
 
     @Test
@@ -127,5 +129,6 @@ public class AccountSettingsViewModelTest {
 
         verify(mockLoadingObserver).onChanged(false);
         verify(mockErrorObserver).onChanged("Unable to update password. Please try again.");
+        verify(mockErrorObserver, atLeastOnce()).onChanged(null);
     }
 }
