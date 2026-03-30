@@ -106,10 +106,10 @@ public class StudentRepository {
     /**
      * Create a new student via API, then sync to local database.
      */
-    public void createStudent(String studentNumber, String name, String course,
+    public void createStudent(String studentNumber, String name, int courseId,
                               OperationCallback callback) {
         String token = getAuthHeader();
-        CreateStudentRequestDTO request = new CreateStudentRequestDTO(studentNumber, name, course);
+        CreateStudentRequestDTO request = new CreateStudentRequestDTO(studentNumber, name, courseId);
 
         apiService.createStudent(token, request).enqueue(new Callback<ApiResponseDTO<StudentDTO>>() {
             @Override
@@ -140,10 +140,10 @@ public class StudentRepository {
     /**
      * Update an existing student via API, then sync to local database.
      */
-    public void updateStudent(long studentId, String studentNumber, String name, String course,
+    public void updateStudent(long studentId, String studentNumber, String name, int courseId,
                               OperationCallback callback) {
         String token = getAuthHeader();
-        UpdateStudentRequestDTO request = new UpdateStudentRequestDTO(studentNumber, name, course);
+        UpdateStudentRequestDTO request = new UpdateStudentRequestDTO(studentNumber, name, courseId);
 
         apiService.updateStudent(token, studentId, request).enqueue(new Callback<ApiResponseDTO<StudentDTO>>() {
             @Override
@@ -169,6 +169,11 @@ public class StudentRepository {
                 if (callback != null) callback.onError(t.getMessage());
             }
         });
+    }
+
+    public int getCourseIdByNameSync(String name) {
+        CourseEntity course = courseDao.getCourseByNameSync(name);
+        return course != null ? course.getId() : -1;
     }
 
     /**

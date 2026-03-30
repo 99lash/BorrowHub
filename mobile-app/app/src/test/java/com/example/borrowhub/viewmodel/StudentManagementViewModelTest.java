@@ -3,6 +3,7 @@ package com.example.borrowhub.viewmodel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -53,6 +54,11 @@ public class StudentManagementViewModelTest {
             callback.onSuccess(Arrays.asList("Computer Science", "Information Systems"));
             return null;
         }).when(repository).refreshCoursesFromApi(any());
+
+        // Mock course ID lookup
+        when(repository.getCourseIdByNameSync("Computer Science")).thenReturn(101);
+        when(repository.getCourseIdByNameSync("Information Systems")).thenReturn(102);
+
         studentsLiveData.setValue(Collections.emptyList());
 
         viewModel = new StudentManagementViewModel(application, repository);
@@ -73,7 +79,7 @@ public class StudentManagementViewModelTest {
     }
 
     @Test
-    public void addStudent_successAfterError_clearsErrorStateAndResyncs() {
+    public void addStudent_successAfterError_clearsErrorStateAndResyncs() throws InterruptedException {
         AtomicInteger invocationCounter = new AtomicInteger(0);
         doAnswer(invocation -> {
             StudentRepository.OperationCallback callback = invocation.getArgument(3);
@@ -83,12 +89,14 @@ public class StudentManagementViewModelTest {
                 callback.onSuccess();
             }
             return null;
-        }).when(repository).createStudent(any(), any(), any(), any());
+        }).when(repository).createStudent(any(), any(), anyInt(), any());
 
         viewModel.addStudent(" STU003 ", " Charlie ", " Computer Science ");
+        Thread.sleep(100);
         viewModel.addStudent(" STU003 ", " Charlie ", " Computer Science ");
+        Thread.sleep(100);
 
-        verify(repository, org.mockito.Mockito.times(2)).createStudent(eq("STU003"), eq("Charlie"), eq("Computer Science"), any());
+        verify(repository, org.mockito.Mockito.times(2)).createStudent(eq("STU003"), eq("Charlie"), eq(101), any());
         verify(repository, atLeastOnce()).getAllStudents();
         verify(repository).refreshStudentsFromApi();
         verify(repository, atLeastOnce()).refreshCoursesFromApi(any());
@@ -97,7 +105,7 @@ public class StudentManagementViewModelTest {
     }
 
     @Test
-    public void addStudent_errorAfterSuccess_clearsSuccessStateAndSetsDefaultError() {
+    public void addStudent_errorAfterSuccess_clearsSuccessStateAndSetsDefaultError() throws InterruptedException {
         AtomicInteger invocationCounter = new AtomicInteger(0);
         doAnswer(invocation -> {
             StudentRepository.OperationCallback callback = invocation.getArgument(3);
@@ -107,10 +115,12 @@ public class StudentManagementViewModelTest {
                 callback.onError(null);
             }
             return null;
-        }).when(repository).createStudent(any(), any(), any(), any());
+        }).when(repository).createStudent(any(), any(), anyInt(), any());
 
         viewModel.addStudent("STU003", "Charlie", "Computer Science");
+        Thread.sleep(100);
         viewModel.addStudent("STU003", "Charlie", "Computer Science");
+        Thread.sleep(100);
 
         verify(repository, atLeastOnce()).getAllStudents();
         verify(repository, atLeastOnce()).refreshCoursesFromApi(any());
@@ -119,16 +129,17 @@ public class StudentManagementViewModelTest {
     }
 
     @Test
-    public void updateStudent_success_setsSuccessAndResyncs() {
+    public void updateStudent_success_setsSuccessAndResyncs() throws InterruptedException {
         doAnswer(invocation -> {
             StudentRepository.OperationCallback callback = invocation.getArgument(4);
             callback.onSuccess();
             return null;
-        }).when(repository).updateStudent(anyLong(), any(), any(), any(), any());
+        }).when(repository).updateStudent(anyLong(), any(), any(), anyInt(), any());
 
         viewModel.updateStudent(5L, " STU005 ", " Diana ", " Information Systems ");
+        Thread.sleep(100);
 
-        verify(repository).updateStudent(eq(5L), eq("STU005"), eq("Diana"), eq("Information Systems"), any());
+        verify(repository).updateStudent(eq(5L), eq("STU005"), eq("Diana"), eq(102), any());
         verify(repository, atLeastOnce()).getAllStudents();
         verify(repository).refreshStudentsFromApi();
         verify(repository, atLeastOnce()).refreshCoursesFromApi(any());
@@ -137,17 +148,18 @@ public class StudentManagementViewModelTest {
     }
 
     @Test
-    public void updateStudent_error_setsRepositoryErrorMessage() {
+    public void updateStudent_error_setsRepositoryErrorMessage() throws InterruptedException {
         doAnswer(invocation -> {
             StudentRepository.OperationCallback callback = invocation.getArgument(4);
             callback.onError("Backend rejected update");
             return null;
-        }).when(repository).updateStudent(anyLong(), any(), any(), any(), any());
+        }).when(repository).updateStudent(anyLong(), any(), any(), anyInt(), any());
 
         viewModel.updateStudent(5L, "STU005", "Diana", "Information Systems");
+        Thread.sleep(100);
 
-        verify(repository).getAllStudents();
-        verify(repository).refreshCoursesFromApi(any());
+        verify(repository, atLeastOnce()).getAllStudents();
+        verify(repository, atLeastOnce()).refreshCoursesFromApi(any());
         assertNull(viewModel.getOperationSuccess().getValue());
         assertEquals("Backend rejected update", viewModel.getOperationError().getValue());
     }
@@ -181,17 +193,18 @@ public class StudentManagementViewModelTest {
         viewModel.deleteStudent(7L);
 
         verify(repository).getAllStudents();
-        verify(repository).refreshCoursesFromApi(any());
+        verify(repository, atLeastOnce()).refreshCoursesFromApi(any());
         assertNull(viewModel.getOperationSuccess().getValue());
         assertEquals("Failed to delete student", viewModel.getOperationError().getValue());
     }
 
     @Test
-    public void importFromCsv_emptyInput_setsValidationError() {
+    public void importFromCsv_emptyInput_setsValidationError() throws InterruptedException {
         viewModel.importFromCsv(" \n ");
+        Thread.sleep(100);
 
-        verify(repository).getAllStudents();
-        verify(repository).refreshCoursesFromApi(any());
+        verify(repository, atLeastOnce()).getAllStudents();
+        verify(repository, atLeastOnce()).refreshCoursesFromApi(any());
         assertEquals("No valid new students found to import", viewModel.getOperationError().getValue());
     }
 

@@ -81,40 +81,56 @@ public class StudentManagementViewModel extends AndroidViewModel {
         applyFilters();
     }
 
-    public void addStudent(String studentNumber, String name, String course) {
-        repository.createStudent(studentNumber.trim(), name.trim(), course.trim(), new StudentRepository.OperationCallback() {
-            @Override
-            public void onSuccess() {
-                triggerStudentsSync();
-                operationSuccess.postValue(true);
-                operationError.postValue(null);
-                refreshCourses();
+    public void addStudent(String studentNumber, String name, String courseName) {
+        new Thread(() -> {
+            int courseId = repository.getCourseIdByNameSync(courseName.trim());
+            if (courseId == -1) {
+                operationError.postValue("Invalid course selected");
+                return;
             }
 
-            @Override
-            public void onError(String errorMessage) {
-                operationSuccess.postValue(null);
-                operationError.postValue(errorMessage == null ? "Failed to add student" : errorMessage);
-            }
-        });
+            repository.createStudent(studentNumber.trim(), name.trim(), courseId, new StudentRepository.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    triggerStudentsSync();
+                    operationSuccess.postValue(true);
+                    operationError.postValue(null);
+                    refreshCourses();
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    operationSuccess.postValue(null);
+                    operationError.postValue(errorMessage == null ? "Failed to add student" : errorMessage);
+                }
+            });
+        }).start();
     }
 
-    public void updateStudent(long id, String studentNumber, String name, String course) {
-        repository.updateStudent(id, studentNumber.trim(), name.trim(), course.trim(), new StudentRepository.OperationCallback() {
-            @Override
-            public void onSuccess() {
-                triggerStudentsSync();
-                operationSuccess.postValue(true);
-                operationError.postValue(null);
-                refreshCourses();
+    public void updateStudent(long id, String studentNumber, String name, String courseName) {
+        new Thread(() -> {
+            int courseId = repository.getCourseIdByNameSync(courseName.trim());
+            if (courseId == -1) {
+                operationError.postValue("Invalid course selected");
+                return;
             }
 
-            @Override
-            public void onError(String errorMessage) {
-                operationSuccess.postValue(null);
-                operationError.postValue(errorMessage == null ? "Failed to update student" : errorMessage);
-            }
-        });
+            repository.updateStudent(id, studentNumber.trim(), name.trim(), courseId, new StudentRepository.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    triggerStudentsSync();
+                    operationSuccess.postValue(true);
+                    operationError.postValue(null);
+                    refreshCourses();
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    operationSuccess.postValue(null);
+                    operationError.postValue(errorMessage == null ? "Failed to update student" : errorMessage);
+                }
+            });
+        }).start();
     }
 
     public void deleteStudent(long id) {
@@ -136,27 +152,29 @@ public class StudentManagementViewModel extends AndroidViewModel {
     }
 
     public void importFromCsv(String csvText) {
-        List<CreateStudentRequestDTO> requests = buildImportRequests(csvText);
-        if (requests.isEmpty()) {
-            operationError.setValue("No valid new students found to import");
-            return;
-        }
-
-        repository.importStudents(requests, new StudentRepository.OperationCallback() {
-            @Override
-            public void onSuccess() {
-                triggerStudentsSync();
-                operationSuccess.postValue(true);
-                operationError.postValue(null);
-                refreshCourses();
+        new Thread(() -> {
+            List<CreateStudentRequestDTO> requests = buildImportRequests(csvText);
+            if (requests.isEmpty()) {
+                operationError.postValue("No valid new students found to import");
+                return;
             }
 
-            @Override
-            public void onError(String errorMessage) {
-                operationSuccess.postValue(null);
-                operationError.postValue(errorMessage == null ? "Failed to import students" : errorMessage);
-            }
-        });
+            repository.importStudents(requests, new StudentRepository.OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    triggerStudentsSync();
+                    operationSuccess.postValue(true);
+                    operationError.postValue(null);
+                    refreshCourses();
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    operationSuccess.postValue(null);
+                    operationError.postValue(errorMessage == null ? "Failed to import students" : errorMessage);
+                }
+            });
+        }).start();
     }
 
     public boolean isStudentNumberDuplicate(String studentNumber, long excludeId) {
@@ -219,10 +237,13 @@ public class StudentManagementViewModel extends AndroidViewModel {
                 if (i > 2) courseSb.append(",");
                 courseSb.append(parts[i].trim());
             }
-            String course = courseSb.toString().trim();
+            String courseName = courseSb.toString().trim();
 
-            if (!studentNumber.isEmpty() && !name.isEmpty() && !course.isEmpty()) {
-                requests.add(new CreateStudentRequestDTO(studentNumber, name, course));
+            if (!studentNumber.isEmpty() && !name.isEmpty() && !courseName.isEmpty()) {
+                int courseId = repository.getCourseIdByNameSync(courseName);
+                if (courseId != -1) {
+                    requests.add(new CreateStudentRequestDTO(studentNumber, name, courseId));
+                }
             }
         }
         return requests;
