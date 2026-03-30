@@ -17,7 +17,6 @@ import com.example.borrowhub.data.remote.dto.StudentDTO;
 import com.example.borrowhub.data.remote.dto.CourseDTO;
 import com.example.borrowhub.data.remote.dto.CreateStudentRequestDTO;
 import com.example.borrowhub.data.remote.dto.UpdateStudentRequestDTO;
-import com.example.borrowhub.data.remote.dto.ImportStudentsRequestDTO;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +31,9 @@ import java.util.Set;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.MediaType;
 
 /**
  * Repository for managing Student data.
@@ -211,9 +213,27 @@ public class StudentRepository {
      */
     public void importStudents(List<CreateStudentRequestDTO> students, OperationCallback callback) {
         String token = getAuthHeader();
-        ImportStudentsRequestDTO request = new ImportStudentsRequestDTO(students);
 
-        apiService.importStudents(token, request).enqueue(new Callback<ApiResponseDTO<Void>>() {
+        // Build CSV string with header
+        StringBuilder csv = new StringBuilder("student_number,name,course_id\n");
+        for (CreateStudentRequestDTO s : students) {
+            csv.append(s.getStudentNumber()).append(",")
+               .append(s.getName()).append(",")
+               .append(s.getCourseId()).append("\n");
+        }
+
+        RequestBody requestFile = RequestBody.create(
+                MediaType.parse("text/csv"),
+                csv.toString()
+        );
+
+        MultipartBody.Part body = MultipartBody.Part.createFormData(
+                "file",
+                "students_import.csv",
+                requestFile
+        );
+
+        apiService.importStudents(token, body).enqueue(new Callback<ApiResponseDTO<Void>>() {
             @Override
             public void onResponse(Call<ApiResponseDTO<Void>> call,
                                    Response<ApiResponseDTO<Void>> response) {
