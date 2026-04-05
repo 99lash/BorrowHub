@@ -16,6 +16,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.example.borrowhub.data.remote.dto.PaginatedResponseDTO;
+
 /**
  * Repository for managing transactions (borrow/return).
  */
@@ -117,6 +119,38 @@ public class TransactionRepository {
             return null;
         }
         return token.startsWith("Bearer ") ? token : "Bearer " + token;
+    }
+
+    /**
+     * Get all transaction records (history) from API with pagination and filtering.
+     */
+    public void getTransactionHistory(String search, String status, String dateFrom,
+                                      String dateTo, int page,
+                                      MutableLiveData<PaginatedResponseDTO<BorrowRecordDTO>> liveData) {
+        String token = getAuthHeader();
+
+        apiService.getTransactionHistory(token, search, status, dateFrom, dateTo, page)
+                .enqueue(new Callback<ApiResponseDTO<PaginatedResponseDTO<BorrowRecordDTO>>>() {
+                    @Override
+                    public void onResponse(
+                            Call<ApiResponseDTO<PaginatedResponseDTO<BorrowRecordDTO>>> call,
+                            Response<ApiResponseDTO<PaginatedResponseDTO<BorrowRecordDTO>>> response) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                            liveData.postValue(response.body().getData());
+                        } else {
+                            Log.e(TAG, "Failed to fetch transaction history: " + response.code());
+                            liveData.postValue(null);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<ApiResponseDTO<PaginatedResponseDTO<BorrowRecordDTO>>> call,
+                            Throwable t) {
+                        Log.e(TAG, "Error fetching transaction history", t);
+                        liveData.postValue(null);
+                    }
+                });
     }
 
     public interface OperationCallback {

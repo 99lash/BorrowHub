@@ -16,6 +16,7 @@ import com.example.borrowhub.data.remote.dto.BorrowItemRequestDTO;
 import com.example.borrowhub.data.remote.dto.BorrowRecordDTO;
 import com.example.borrowhub.data.remote.dto.BorrowRequestDTO;
 import com.example.borrowhub.data.remote.dto.ItemDTO;
+import com.example.borrowhub.data.remote.dto.PaginatedResponseDTO;
 import com.example.borrowhub.data.remote.dto.StudentDTO;
 import com.example.borrowhub.repository.ItemRepository;
 import com.example.borrowhub.repository.StudentRepository;
@@ -99,6 +100,9 @@ public class TransactionViewModel extends AndroidViewModel {
     private final MutableLiveData<List<ActiveBorrow>> filteredBorrows = new MutableLiveData<>(new ArrayList<>());
     private String normalizedSearch = "";
 
+    // --- State: Transaction History ---
+    private final MutableLiveData<List<BorrowRecordDTO>> transactionHistory = new MutableLiveData<>(new ArrayList<>());
+
     // --- Data: Inventory ---
     private final LiveData<List<CategoryEntity>> categories;
     private final LiveData<List<ItemEntity>> allItems;
@@ -147,6 +151,9 @@ public class TransactionViewModel extends AndroidViewModel {
 
     // --- Getters: Return Workflow ---
     public LiveData<List<ActiveBorrow>> getFilteredBorrows() { return filteredBorrows; }
+
+    // --- Getters: Transaction History ---
+    public LiveData<List<BorrowRecordDTO>> getTransactionHistory() { return transactionHistory; }
 
     // --- Logic: Student Lookup ---
     public void lookupStudent(String studentNumber) {
@@ -285,6 +292,19 @@ public class TransactionViewModel extends AndroidViewModel {
             }
         });
         transactionRepository.getActiveTransactions(rawData);
+    }
+
+    // --- Logic: Transaction History ---
+    public void fetchTransactionHistory(String search) {
+        MutableLiveData<PaginatedResponseDTO<BorrowRecordDTO>> rawData = new MutableLiveData<>();
+        rawData.observeForever(page -> {
+            if (page != null && page.getData() != null) {
+                transactionHistory.setValue(page.getData());
+            } else if (page == null) {
+                transactionHistory.setValue(new ArrayList<>());
+            }
+        });
+        transactionRepository.getTransactionHistory(search, null, null, null, 1, rawData);
     }
 
     public void setSearchQuery(String query) {
