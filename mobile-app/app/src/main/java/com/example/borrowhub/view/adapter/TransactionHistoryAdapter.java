@@ -125,6 +125,8 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionH
 
         private String formatDate(String rawDate) {
             if (rawDate == null || rawDate.isEmpty()) return "-";
+            SimpleDateFormat phFormatter = new SimpleDateFormat("MMM d, yyyy, hh:mma", Locale.US);
+            phFormatter.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
             try {
                 // Normalize microseconds to milliseconds for SimpleDateFormat compatibility
                 String normalized = rawDate;
@@ -138,16 +140,12 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionH
                 }
                 SimpleDateFormat isoParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
                 isoParser.setTimeZone(TimeZone.getTimeZone("UTC"));
-                SimpleDateFormat phFormatter = new SimpleDateFormat("MMM d, yyyy, hh:mma", Locale.US);
-                phFormatter.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
                 Date date = isoParser.parse(normalized);
                 if (date != null) return phFormatter.format(date);
             } catch (Exception e) {
                 try {
                     SimpleDateFormat isoShort = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
                     isoShort.setTimeZone(TimeZone.getTimeZone("UTC"));
-                    SimpleDateFormat phFormatter = new SimpleDateFormat("MMM d, yyyy, hh:mma", Locale.US);
-                    phFormatter.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
                     Date date = isoShort.parse(rawDate);
                     if (date != null) return phFormatter.format(date);
                 } catch (Exception ignored) {}
