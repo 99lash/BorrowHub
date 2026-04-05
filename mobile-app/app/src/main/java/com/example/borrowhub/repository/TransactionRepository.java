@@ -126,7 +126,7 @@ public class TransactionRepository {
      */
     public void getTransactionHistory(String search, String status, String dateFrom,
                                       String dateTo, int page,
-                                      MutableLiveData<PaginatedResponseDTO<BorrowRecordDTO>> liveData) {
+                                      HistoryCallback callback) {
         String token = getAuthHeader();
 
         apiService.getTransactionHistory(token, search, status, dateFrom, dateTo, page)
@@ -136,10 +136,11 @@ public class TransactionRepository {
                             Call<ApiResponseDTO<PaginatedResponseDTO<BorrowRecordDTO>>> call,
                             Response<ApiResponseDTO<PaginatedResponseDTO<BorrowRecordDTO>>> response) {
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                            liveData.postValue(response.body().getData());
+                            PaginatedResponseDTO<BorrowRecordDTO> data = response.body().getData();
+                            if (callback != null) callback.onResult(data != null ? data.getData() : new java.util.ArrayList<>());
                         } else {
                             Log.e(TAG, "Failed to fetch transaction history: " + response.code());
-                            liveData.postValue(null);
+                            if (callback != null) callback.onResult(new java.util.ArrayList<>());
                         }
                     }
 
@@ -148,9 +149,13 @@ public class TransactionRepository {
                             Call<ApiResponseDTO<PaginatedResponseDTO<BorrowRecordDTO>>> call,
                             Throwable t) {
                         Log.e(TAG, "Error fetching transaction history", t);
-                        liveData.postValue(null);
+                        if (callback != null) callback.onResult(new java.util.ArrayList<>());
                     }
                 });
+    }
+
+    public interface HistoryCallback {
+        void onResult(java.util.List<BorrowRecordDTO> records);
     }
 
     public interface OperationCallback {

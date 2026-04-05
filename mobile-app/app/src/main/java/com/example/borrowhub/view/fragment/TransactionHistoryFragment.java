@@ -55,7 +55,7 @@ public class TransactionHistoryFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String query = s == null ? null : s.toString().trim();
-                viewModel.fetchTransactionHistory(query.isEmpty() ? null : query);
+                viewModel.fetchTransactionHistory(query == null || query.isEmpty() ? null : query);
             }
 
             @Override

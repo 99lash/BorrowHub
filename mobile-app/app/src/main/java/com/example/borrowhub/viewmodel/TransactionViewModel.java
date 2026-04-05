@@ -16,7 +16,6 @@ import com.example.borrowhub.data.remote.dto.BorrowItemRequestDTO;
 import com.example.borrowhub.data.remote.dto.BorrowRecordDTO;
 import com.example.borrowhub.data.remote.dto.BorrowRequestDTO;
 import com.example.borrowhub.data.remote.dto.ItemDTO;
-import com.example.borrowhub.data.remote.dto.PaginatedResponseDTO;
 import com.example.borrowhub.data.remote.dto.StudentDTO;
 import com.example.borrowhub.repository.ItemRepository;
 import com.example.borrowhub.repository.StudentRepository;
@@ -296,15 +295,8 @@ public class TransactionViewModel extends AndroidViewModel {
 
     // --- Logic: Transaction History ---
     public void fetchTransactionHistory(String search) {
-        MutableLiveData<PaginatedResponseDTO<BorrowRecordDTO>> rawData = new MutableLiveData<>();
-        rawData.observeForever(page -> {
-            if (page != null && page.getData() != null) {
-                transactionHistory.setValue(page.getData());
-            } else if (page == null) {
-                transactionHistory.setValue(new ArrayList<>());
-            }
-        });
-        transactionRepository.getTransactionHistory(search, null, null, null, 1, rawData);
+        transactionRepository.getTransactionHistory(search, null, null, null, 1,
+                records -> transactionHistory.postValue(records));
     }
 
     public void setSearchQuery(String query) {

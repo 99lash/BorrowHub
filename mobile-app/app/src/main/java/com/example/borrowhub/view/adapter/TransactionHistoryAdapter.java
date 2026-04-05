@@ -126,11 +126,21 @@ public class TransactionHistoryAdapter extends RecyclerView.Adapter<TransactionH
         private String formatDate(String rawDate) {
             if (rawDate == null || rawDate.isEmpty()) return "-";
             try {
-                SimpleDateFormat isoParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.US);
+                // Normalize microseconds to milliseconds for SimpleDateFormat compatibility
+                String normalized = rawDate;
+                if (normalized.contains(".") && normalized.endsWith("Z")) {
+                    int dotIndex = normalized.lastIndexOf('.');
+                    String fraction = normalized.substring(dotIndex + 1, normalized.length() - 1);
+                    if (fraction.length() > 3) {
+                        fraction = fraction.substring(0, 3);
+                    }
+                    normalized = normalized.substring(0, dotIndex + 1) + fraction + "Z";
+                }
+                SimpleDateFormat isoParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
                 isoParser.setTimeZone(TimeZone.getTimeZone("UTC"));
                 SimpleDateFormat phFormatter = new SimpleDateFormat("MMM d, yyyy, hh:mma", Locale.US);
                 phFormatter.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
-                Date date = isoParser.parse(rawDate);
+                Date date = isoParser.parse(normalized);
                 if (date != null) return phFormatter.format(date);
             } catch (Exception e) {
                 try {
