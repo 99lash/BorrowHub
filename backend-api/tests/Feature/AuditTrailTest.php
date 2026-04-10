@@ -180,7 +180,7 @@ class AuditTrailTest extends TestCase
     public function test_transaction_logs_filter_rejects_invalid_action()
     {
         $response = $this->actingAs($this->admin)
-            ->getJson('/api/v1/transaction-logs?action=Items+Borrowed');
+            ->getJson('/api/v1/transaction-logs?action=invalid_action');
 
         $response->assertStatus(422);
     }
