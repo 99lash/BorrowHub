@@ -215,7 +215,6 @@
     <string name="logs_search_hint">Search by user, ID, or details…</string>
     <string name="logs_transaction_empty_state">No transaction logs match your filters.</string>
     <string name="logs_activity_empty_state">No activity logs match your filters.</string>
-    <string name="logs_filter_all">All Actions</string>
     <string name="logs_filter_borrowed">Borrowed</string>
     <string name="logs_filter_returned">Returned</string>
     <string name="logs_filter_created">Created</string>

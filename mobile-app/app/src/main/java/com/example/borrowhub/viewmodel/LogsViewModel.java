@@ -121,6 +121,12 @@ public class LogsViewModel extends AndroidViewModel {
         return Collections.unmodifiableList(options);
     }
 
+    /**
+     * Maps a UI filter label to the lowercase action string expected by the backend API.
+     * String resources (logs_filter_*) are intentionally named to match backend values
+     * when lowercased: "Borrowed"→"borrowed", "Returned"→"returned",
+     * "Created"→"created", "Updated"→"updated", "Deleted"→"deleted".
+     */
     private String toBackendAction(String uiLabel) {
         if (uiLabel == null || ACTION_ALL.equalsIgnoreCase(uiLabel)) {
             return null;
