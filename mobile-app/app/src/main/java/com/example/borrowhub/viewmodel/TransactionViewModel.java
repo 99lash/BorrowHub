@@ -1,6 +1,8 @@
 package com.example.borrowhub.viewmodel;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -8,6 +10,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.borrowhub.R;
 import com.example.borrowhub.data.local.AppDatabase;
 import com.example.borrowhub.data.local.SessionManager;
 import com.example.borrowhub.data.local.entity.CategoryEntity;
@@ -83,6 +86,20 @@ public class TransactionViewModel extends AndroidViewModel {
         }
     }
 
+    // --- State: Info Card ---
+    private final MutableLiveData<String> currentDateTime = new MutableLiveData<>();
+    private final MutableLiveData<String> processedByName = new MutableLiveData<>("");
+    private final Handler clockHandler = new Handler(Looper.getMainLooper());
+    private final SimpleDateFormat clockFormat =
+            new SimpleDateFormat("MMM dd, yyyy - hh:mm:ss a", Locale.US);
+    private final Runnable clockRunnable = new Runnable() {
+        @Override
+        public void run() {
+            currentDateTime.setValue(clockFormat.format(new Date()));
+            clockHandler.postDelayed(this, 1000);
+        }
+    };
+
     // --- State: Borrow Workflow ---
     private final MutableLiveData<String> studentNameInput = new MutableLiveData<>("");
     private final MutableLiveData<String> courseInput = new MutableLiveData<>("");
@@ -134,7 +151,19 @@ public class TransactionViewModel extends AndroidViewModel {
 
         // Fetch initial active transactions
         fetchActiveTransactions();
+
+        // Start live clock and load logged-in staff name
+        clockRunnable.run();
+        SessionManager sessionManager = new SessionManager(application);
+        String name = sessionManager.getUserName();
+        processedByName.setValue(name != null && !name.isEmpty()
+                ? name
+                : application.getString(R.string.transaction_staff_name));
     }
+
+    // --- Getters: Info Card ---
+    public LiveData<String> getCurrentDateTimeLive() { return currentDateTime; }
+    public LiveData<String> getProcessedByName() { return processedByName; }
 
     // --- Getters: Borrow Workflow ---
     public LiveData<String> getStudentName() { return studentNameInput; }
@@ -444,5 +473,11 @@ public class TransactionViewModel extends AndroidViewModel {
                 itemNames,
                 formattedDateTime
         );
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        clockHandler.removeCallbacks(clockRunnable);
     }
 }
