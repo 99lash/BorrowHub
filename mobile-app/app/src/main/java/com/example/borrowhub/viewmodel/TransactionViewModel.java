@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class TransactionViewModel extends AndroidViewModel {
+    private static final String TAG = "TransactionViewModel";
 
     private final TransactionRepository transactionRepository;
     private final StudentRepository studentRepository;
@@ -164,12 +165,18 @@ public class TransactionViewModel extends AndroidViewModel {
         }
 
         // Load logged-in staff name (guarded for unit tests with mocked Application context)
-        String fallbackName = application.getString(R.string.transaction_staff_name);
+        String fallbackName;
+        try {
+            fallbackName = application.getString(R.string.transaction_staff_name);
+        } catch (RuntimeException ignored) {
+            fallbackName = "System Staff";
+        }
         try {
             SessionManager sessionManager = new SessionManager(application);
             String name = sessionManager.getUserName();
             processedByName.setValue(name != null && !name.isEmpty() ? name : fallbackName);
         } catch (NullPointerException ignored) {
+            Log.w(TAG, "Falling back to default staff name because SessionManager is unavailable.");
             processedByName.setValue(fallbackName);
         }
     }
