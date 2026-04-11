@@ -48,6 +48,8 @@ class StudentManagementTest extends TestCase
 
     public function test_staff_cannot_import_students()
     {
+        // Empty payload is intentional; the role:admin middleware rejects the request
+        // before any payload validation occurs.
         $response = $this->actingAs($this->staff)
             ->postJson('/api/v1/students/import', []);
 
