@@ -26,9 +26,7 @@ class AuditTrailTest extends TestCase
     {
         ActivityLog::create([
             'actor_id' => $this->admin->id,
-            'performed_by' => $this->admin->name,
             'target_user_id' => '1',
-            'target_user_name' => 'Test Target',
             'action' => LogService::ACTION_CREATED,
             'details' => 'Test Details',
             'type' => 'activity'
@@ -43,7 +41,7 @@ class AuditTrailTest extends TestCase
                 'data' => [
                     'data' => [
                         '*' => [
-                            'id', 'actor_id', 'performed_by', 'action', 'details', 'created_at'
+                            'id', 'actor_id', 'actor_name', 'action', 'details', 'created_at'
                         ]
                     ]
                 ]
@@ -54,9 +52,7 @@ class AuditTrailTest extends TestCase
     {
         ActivityLog::create([
             'actor_id' => $this->admin->id,
-            'performed_by' => $this->admin->name,
             'target_user_id' => '1',
-            'target_user_name' => 'Test Student',
             'action' => LogService::ACTION_BORROWED,
             'details' => 'Borrowed items: Laptop (1)',
             'type' => 'transaction'
@@ -81,8 +77,7 @@ class AuditTrailTest extends TestCase
 
         $this->assertDatabaseHas('activity_logs', [
             'action' => LogService::ACTION_CREATED,
-            'performed_by' => $this->admin->name,
-            'target_user_name' => 'New User'
+            'actor_id' => $this->admin->id,
         ]);
     }
 
@@ -103,7 +98,7 @@ class AuditTrailTest extends TestCase
 
         $this->assertDatabaseHas('activity_logs', [
             'action' => LogService::ACTION_CREATED,
-            'target_user_name' => 'Test Item'
+            'actor_id' => $this->admin->id,
         ]);
     }
 
@@ -111,9 +106,7 @@ class AuditTrailTest extends TestCase
     {
         ActivityLog::create([
             'actor_id' => $this->admin->id,
-            'performed_by' => $this->admin->name,
             'target_user_id' => '1',
-            'target_user_name' => 'Item A',
             'action' => LogService::ACTION_CREATED,
             'details' => 'Created item',
             'type' => 'activity'
@@ -121,9 +114,7 @@ class AuditTrailTest extends TestCase
 
         ActivityLog::create([
             'actor_id' => $this->admin->id,
-            'performed_by' => $this->admin->name,
             'target_user_id' => '2',
-            'target_user_name' => 'Item B',
             'action' => LogService::ACTION_DELETED,
             'details' => 'Deleted item',
             'type' => 'activity'
@@ -142,9 +133,7 @@ class AuditTrailTest extends TestCase
     {
         ActivityLog::create([
             'actor_id' => $this->admin->id,
-            'performed_by' => $this->admin->name,
             'target_user_id' => '1',
-            'target_user_name' => 'Student A',
             'action' => LogService::ACTION_BORROWED,
             'details' => 'Borrowed items: Laptop (1)',
             'type' => 'transaction'
@@ -152,9 +141,7 @@ class AuditTrailTest extends TestCase
 
         ActivityLog::create([
             'actor_id' => $this->admin->id,
-            'performed_by' => $this->admin->name,
             'target_user_id' => '1',
-            'target_user_name' => 'Student A',
             'action' => LogService::ACTION_RETURNED,
             'details' => 'Returned items: Laptop (1)',
             'type' => 'transaction'
