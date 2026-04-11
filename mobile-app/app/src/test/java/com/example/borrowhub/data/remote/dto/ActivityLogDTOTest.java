@@ -2,6 +2,7 @@ package com.example.borrowhub.data.remote.dto;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -55,7 +56,7 @@ public class ActivityLogDTOTest {
 
         ActivityLogDTO dto = gson.fromJson(json, ActivityLogDTO.class);
 
-        assertEquals(3L, dto.getId());
+        assertEquals(Long.valueOf(3), dto.getId());
         assertEquals("Staff (Ana)", dto.getPerformedBy());
         assertEquals("STU003", dto.getTargetUserId());
         assertEquals("Bob Cruz", dto.getTargetUserName());
@@ -101,7 +102,7 @@ public class ActivityLogDTOTest {
         Type responseType = new TypeToken<ApiResponseDTO<PaginatedResponseDTO<ActivityLogDTO>>>() {}.getType();
         ApiResponseDTO<PaginatedResponseDTO<ActivityLogDTO>> response = gson.fromJson(json, responseType);
 
-        assertEquals(true, response.isSuccess());
+        assertTrue(response.isSuccess());
         List<ActivityLogDTO> logs = response.getData().getData();
         assertEquals(2, logs.size());
 
