@@ -35,8 +35,7 @@ class UserService
         $this->logService->log(
             LogService::ACTION_CREATED,
             "Created user with username: {$user->username}, Role: {$user->role}",
-            (string)$user->id,
-            $user->name
+            (string)$user->id
         );
 
         return $user;
@@ -53,8 +52,7 @@ class UserService
         $this->logService->log(
             LogService::ACTION_UPDATED,
             "Updated user fields: " . implode(', ', array_keys($data)),
-            (string)$user->id,
-            $user->name
+            (string)$user->id
         );
 
         return $user;
@@ -76,8 +74,7 @@ class UserService
             $this->logService->log(
                 LogService::ACTION_DELETED,
                 "Deleted user with username: {$user->username}",
-                (string)$user->id,
-                $user->name
+                (string)$user->id
             );
         }
 
@@ -99,8 +96,7 @@ class UserService
         $this->logService->log(
             LogService::ACTION_UPDATED,
             "Reset password for user",
-            (string)$user->id,
-            $user->name
+            (string)$user->id
         );
 
         return $user;

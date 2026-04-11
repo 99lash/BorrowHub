@@ -19,9 +19,7 @@ class ActivityLogFactory extends Factory
     {
         return [
             'actor_id' => User::factory(),
-            'performed_by' => fake()->name(),
             'target_user_id' => (string) fake()->randomNumber(5),
-            'target_user_name' => fake()->name(),
             'action' => 'login',
             'details' => 'user logged into the system.',
             'type' => 'activity'
