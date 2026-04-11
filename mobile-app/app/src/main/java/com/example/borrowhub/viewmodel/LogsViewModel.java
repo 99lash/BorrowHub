@@ -12,6 +12,7 @@ import com.example.borrowhub.data.local.SessionManager;
 import com.example.borrowhub.data.local.entity.ActivityLogEntity;
 import com.example.borrowhub.data.local.entity.TransactionLogEntity;
 import com.example.borrowhub.repository.LogRepository;
+import com.example.borrowhub.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -106,22 +107,35 @@ public class LogsViewModel extends AndroidViewModel {
     public List<String> getTransactionActionOptions() {
         List<String> options = new ArrayList<>();
         options.add(ACTION_ALL);
-        options.add("Items Borrowed");
-        options.add("Items Returned");
+        options.add(getApplication().getString(R.string.logs_filter_borrowed));
+        options.add(getApplication().getString(R.string.logs_filter_returned));
         return Collections.unmodifiableList(options);
     }
 
     public List<String> getActivityActionOptions() {
         List<String> options = new ArrayList<>();
         options.add(ACTION_ALL);
-        options.add("Item Added");
-        options.add("Item Updated");
-        options.add("Item Deleted");
+        options.add(getApplication().getString(R.string.logs_filter_created));
+        options.add(getApplication().getString(R.string.logs_filter_updated));
+        options.add(getApplication().getString(R.string.logs_filter_deleted));
         return Collections.unmodifiableList(options);
     }
 
+    /**
+     * Maps a UI filter label to the lowercase action string expected by the backend API.
+     * String resources (logs_filter_*) are intentionally named to match backend values
+     * when lowercased: "Borrowed"→"borrowed", "Returned"→"returned",
+     * "Created"→"created", "Updated"→"updated", "Deleted"→"deleted".
+     */
+    private String toBackendAction(String uiLabel) {
+        if (uiLabel == null || ACTION_ALL.equalsIgnoreCase(uiLabel)) {
+            return null;
+        }
+        return uiLabel.trim().toLowerCase(Locale.US);
+    }
+
     private void applyTransactionFilters() {
-        String actionFilter = ACTION_ALL.equalsIgnoreCase(transactionAction) ? null : transactionAction;
+        String actionFilter = toBackendAction(transactionAction);
         LiveData<List<TransactionLogEntity>> source = logRepository.getTransactionLogs(actionFilter, null, null);
 
         if (transactionSource != null) {
@@ -133,7 +147,7 @@ public class LogsViewModel extends AndroidViewModel {
     }
 
     private void applyActivityFilters() {
-        String actionFilter = ACTION_ALL.equalsIgnoreCase(activityAction) ? null : activityAction;
+        String actionFilter = toBackendAction(activityAction);
         LiveData<List<ActivityLogEntity>> source = logRepository.getActivityLogs(actionFilter, null, null);
 
         if (activitySource != null) {
