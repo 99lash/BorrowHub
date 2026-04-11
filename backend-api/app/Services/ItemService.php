@@ -31,7 +31,8 @@ class ItemService
         $this->logService->log(
             LogService::ACTION_CREATED,
             "Created item with quantity: {$item->total_quantity}",
-            (string)$item->id
+            (string)$item->id,
+            'item'
         );
 
         return $item;
@@ -44,7 +45,8 @@ class ItemService
         $this->logService->log(
             LogService::ACTION_UPDATED,
             "Updated item fields: " . implode(', ', array_keys($data)),
-            (string)$item->id
+            (string)$item->id,
+            'item'
         );
 
         return $item;
@@ -59,7 +61,8 @@ class ItemService
             $this->logService->log(
                 LogService::ACTION_DELETED,
                 "Deleted item",
-                (string)$item->id
+                (string)$item->id,
+                'item'
             );
         }
 

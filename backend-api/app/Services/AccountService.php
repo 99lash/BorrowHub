@@ -35,7 +35,8 @@ class AccountService
         $this->logService->log(
             LogService::ACTION_UPDATED,
             "Updated account profile (name/username).",
-            (string)$updatedUser->id
+            (string)$updatedUser->id,
+            'user'
         );
 
         return $updatedUser;
@@ -64,7 +65,8 @@ class AccountService
         $this->logService->log(
             LogService::ACTION_UPDATED,
             "Updated account password.",
-            (string)$updatedUser->id
+            (string)$updatedUser->id,
+            'user'
         );
 
         return $updatedUser;

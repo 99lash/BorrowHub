@@ -14,6 +14,7 @@ class ActivityLog extends Model
     protected $fillable = [
         'actor_id',
         'target_user_id',
+        'target_type',
         'action',
         'details',
         'type',
@@ -22,15 +23,5 @@ class ActivityLog extends Model
     public function actor()
     {
         return $this->belongsTo(User::class, 'actor_id')->withTrashed();
-    }
-
-    public function targetStudent()
-    {
-        return $this->belongsTo(Student::class, 'target_user_id')->withTrashed();
-    }
-
-    public function targetUser()
-    {
-        return $this->belongsTo(User::class, 'target_user_id')->withTrashed();
     }
 }

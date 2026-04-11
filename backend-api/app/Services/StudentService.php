@@ -44,7 +44,8 @@ class StudentService
         $this->logService->log(
             LogService::ACTION_CREATED,
             "Created student in course ID: {$student->course_id}",
-            (string)$student->id
+            (string)$student->id,
+            'student'
         );
 
         return $student;
@@ -57,7 +58,8 @@ class StudentService
         $this->logService->log(
             LogService::ACTION_UPDATED,
             "Updated student fields: " . implode(', ', array_keys($data)),
-            (string)$student->id
+            (string)$student->id,
+            'student'
         );
 
         return $student;
@@ -72,7 +74,8 @@ class StudentService
             $this->logService->log(
                 LogService::ACTION_DELETED,
                 "Deleted student",
-                (string)$student->id
+                (string)$student->id,
+                'student'
             );
         }
 
@@ -136,7 +139,8 @@ class StudentService
                 $this->logService->log(
                     LogService::ACTION_CREATED,
                     "Imported {$results['success']} students. Failed: {$results['failed']}",
-                    "N/A"
+                    "N/A",
+                    "batch"
                 );
             }
 

@@ -18,11 +18,12 @@ class ActivityLogFactory extends Factory
     public function definition(): array
     {
         return [
-            'actor_id' => User::factory(),
+            'actor_id'       => User::factory(),
             'target_user_id' => (string) fake()->randomNumber(5),
-            'action' => 'login',
-            'details' => 'user logged into the system.',
-            'type' => 'activity'
+            'target_type'    => 'user',
+            'action'         => 'created',
+            'details'        => 'user logged into the system.',
+            'type'           => 'activity',
         ];
     }
 }
