@@ -88,6 +88,7 @@
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/logs_page_prev_desc"
             android:text="@string/logs_page_prev"
             app:icon="@android:drawable/ic_media_previous" />
 
@@ -106,6 +107,7 @@
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/logs_page_next_desc"
             android:text="@string/logs_page_next"
             app:icon="@android:drawable/ic_media_next" />
     </LinearLayout>

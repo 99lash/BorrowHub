@@ -231,6 +231,8 @@
     <string name="logs_page_prev">Prev</string>
     <string name="logs_page_next">Next</string>
     <string name="logs_page_default">Page 1 of 1</string>
+    <string name="logs_page_prev_desc">Previous page</string>
+    <string name="logs_page_next_desc">Next page</string>
 
     <!-- Account Settings -->
     <string name="account_settings_title">Account &amp; Security</string>
