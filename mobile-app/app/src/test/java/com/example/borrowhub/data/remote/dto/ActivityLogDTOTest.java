@@ -56,7 +56,7 @@ public class ActivityLogDTOTest {
 
         ActivityLogDTO dto = gson.fromJson(json, ActivityLogDTO.class);
 
-        assertEquals(Long.valueOf(3), dto.getId());
+        assertEquals(3L, dto.getId());
         assertEquals("Staff (Ana)", dto.getPerformedBy());
         assertEquals("STU003", dto.getTargetUserId());
         assertEquals("Bob Cruz", dto.getTargetUserName());
