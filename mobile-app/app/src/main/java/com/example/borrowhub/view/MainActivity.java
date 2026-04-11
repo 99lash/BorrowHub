@@ -141,10 +141,14 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser != null) {
             dropdownBinding.tvProfileName.setText(currentUser.getName());
             dropdownBinding.tvProfileRole.setText(currentUser.getRole());
+        } else {
+            dropdownBinding.tvProfileName.setText(sessionManager.getUserName());
+            dropdownBinding.tvProfileRole.setText(sessionManager.getUserRole());
         }
 
         // Apply role-based visibility: hide management items for non-admin users
-        boolean isAdmin = currentUser != null && SessionManager.ROLE_ADMIN.equalsIgnoreCase(currentUser.getRole());
+        String currentRole = currentUser != null ? currentUser.getRole() : sessionManager.getUserRole();
+        boolean isAdmin = SessionManager.ROLE_ADMIN.equalsIgnoreCase(currentRole);
         if (!isAdmin) {
             dropdownBinding.itemUserManagement.setVisibility(View.GONE);
             dropdownBinding.itemStudentManagement.setVisibility(View.GONE);

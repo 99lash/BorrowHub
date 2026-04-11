@@ -47,6 +47,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('items', ItemController::class);
 
         // Audit Trail Routes (Admin + Staff)
+        // Note: Partitioning is handled inside LogService based on user role.
         Route::get('/activity-logs', [LogController::class, 'indexActivityLogs']);
         Route::get('/transaction-logs', [LogController::class, 'indexTransactionLogs']);
 
