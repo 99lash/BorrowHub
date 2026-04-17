@@ -27,11 +27,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
     }
 
     private final boolean compactLayout;
+    private final boolean isAdmin;
     private final ItemActionListener listener;
     private List<ItemEntity> items = new ArrayList<>();
 
-    public ItemAdapter(boolean compactLayout, ItemActionListener listener) {
+    public ItemAdapter(boolean compactLayout, boolean isAdmin, ItemActionListener listener) {
         this.compactLayout = compactLayout;
+        this.isAdmin = isAdmin;
         this.listener = listener;
     }
 
@@ -50,7 +52,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        holder.bind(items.get(position), listener);
+        holder.bind(items.get(position), listener, isAdmin);
     }
 
     @Override
@@ -76,7 +78,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
 
-        void bind(ItemEntity item, ItemActionListener listener) {
+        void bind(ItemEntity item, ItemActionListener listener, boolean isAdmin) {
             tvItemName.setText(item.name);
             tvType.setText(item.type);
             
@@ -97,6 +99,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemViewHolder
             ));
 
             applyStatusColor(itemView.getContext(), displayStatus);
+
+            btnEdit.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
+            btnDelete.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
 
             btnEdit.setOnClickListener(v -> listener.onEditItem(item));
             btnDelete.setOnClickListener(v -> listener.onDeleteItem(item));

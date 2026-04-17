@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.borrowhub.R;
+import com.example.borrowhub.data.local.SessionManager;
 import com.example.borrowhub.data.local.entity.CategoryEntity;
 import com.example.borrowhub.data.local.entity.ItemEntity;
 import com.example.borrowhub.databinding.FragmentInventoryBinding;
@@ -35,6 +36,7 @@ public class InventoryFragment extends Fragment implements ItemAdapter.ItemActio
     private FragmentInventoryBinding binding;
     private InventoryViewModel viewModel;
     private ItemAdapter itemAdapter;
+    private SessionManager sessionManager;
     
     private List<String> categoryNames = new ArrayList<>();
 
@@ -49,15 +51,25 @@ public class InventoryFragment extends Fragment implements ItemAdapter.ItemActio
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        sessionManager = new SessionManager(requireContext());
+        boolean isAdmin = SessionManager.ROLE_ADMIN.equalsIgnoreCase(sessionManager.getUserRole());
+
         viewModel = new ViewModelProvider(this).get(InventoryViewModel.class);
         boolean useCompactLayout = isCompactLayout();
-        itemAdapter = new ItemAdapter(useCompactLayout, this);
+        itemAdapter = new ItemAdapter(useCompactLayout, isAdmin, this);
 
         binding.rvInventory.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.rvInventory.setAdapter(itemAdapter);
 
         setupSearchFilter();
-        setupAddItemButton();
+        
+        if (isAdmin) {
+            setupAddItemButton();
+            binding.btnAddItem.setVisibility(View.VISIBLE);
+        } else {
+            binding.btnAddItem.setVisibility(View.GONE);
+        }
+        
         setupPaginationButtons();
         observeViewModel();
     }
@@ -176,11 +188,19 @@ public class InventoryFragment extends Fragment implements ItemAdapter.ItemActio
 
     @Override
     public void onEditItem(ItemEntity item) {
+        if (!SessionManager.ROLE_ADMIN.equalsIgnoreCase(sessionManager.getUserRole())) {
+            Toast.makeText(requireContext(), R.string.error_unauthorized, Toast.LENGTH_SHORT).show();
+            return;
+        }
         showAddEditDialog(item);
     }
 
     @Override
     public void onDeleteItem(ItemEntity item) {
+        if (!SessionManager.ROLE_ADMIN.equalsIgnoreCase(sessionManager.getUserRole())) {
+            Toast.makeText(requireContext(), R.string.error_unauthorized, Toast.LENGTH_SHORT).show();
+            return;
+        }
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.inventory_delete_title)
                 .setMessage(getString(R.string.inventory_delete_message, item.name))

@@ -24,12 +24,39 @@ class StudentManagementTest extends TestCase
         $this->course = Course::create(['name' => 'BS Computer Science']);
     }
 
-    public function test_staff_cannot_list_students()
+    public function test_staff_can_list_students()
     {
+        Student::factory()->count(5)->create(['course_id' => $this->course->id]);
+
         $response = $this->actingAs($this->staff)
             ->getJson('/api/v1/students');
 
-        $response->assertStatus(403);
+        $response->assertStatus(200);
+    }
+
+    public function test_staff_can_view_student_details()
+    {
+        $student = Student::factory()->create(['course_id' => $this->course->id]);
+
+        $response = $this->actingAs($this->staff)
+            ->getJson("/api/v1/students/{$student->id}");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.id', $student->id);
+    }
+
+    public function test_staff_can_view_student_by_student_number()
+    {
+        $student = Student::factory()->create([
+            'student_number' => '2023-0001',
+            'course_id' => $this->course->id
+        ]);
+
+        $response = $this->actingAs($this->staff)
+            ->getJson("/api/v1/students/2023-0001");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.id', $student->id);
     }
 
     public function test_staff_cannot_create_student()

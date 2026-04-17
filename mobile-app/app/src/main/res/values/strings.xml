@@ -4,9 +4,9 @@
     <string name="login_subtitle">Borrowable Asset Management System
 </string>
     <string name="username_label">Username</string>
-    <string name="username_hint">Enter your username (admin / staff)</string>
+    <string name="username_hint">Enter your username</string>
     <string name="password_label">Password</string>
-    <string name="password_hint">Enter your password (123)</string>
+    <string name="password_hint">Enter your password</string>
     <string name="sign_in_button">Sign In</string>
     <string name="login_footer_text">Authorized personnel only</string>
     <string name="login_copyright">© 2026 Computer Studies Department. All rights reserved.</string>
@@ -177,7 +177,7 @@
     <string name="transaction_important_note">Important: All borrowed items must be returned by the end of the day.</string>
 
     <!-- Borrow form - submit -->
-    <string name="transaction_submit_borrow">Submit Borrow Request</string>
+    <string name="transaction_submit_borrow">Submit Borrow</string>
 
     <!-- Success state -->
     <string name="transaction_success_title">Borrow Request Submitted</string>
@@ -221,6 +221,18 @@
     <string name="logs_filter_created">Created</string>
     <string name="logs_filter_updated">Updated</string>
     <string name="logs_filter_deleted">Deleted</string>
+    <string name="logs_date_period_today">Today</string>
+    <string name="logs_date_period_last_7_days">Last 7 Days</string>
+    <string name="logs_date_period_last_30_days">Last 30 Days</string>
+    <string name="logs_date_period_this_month">This Month</string>
+    <string name="logs_date_period_custom_range">Custom Range\u2026</string>
+    <string name="logs_date_period_all_time">All Time</string>
+    <string name="logs_page_format">Page %1$d of %2$d</string>
+    <string name="logs_page_prev">Prev</string>
+    <string name="logs_page_next">Next</string>
+    <string name="logs_page_default">Page 1 of 1</string>
+    <string name="logs_page_prev_desc">Previous page</string>
+    <string name="logs_page_next_desc">Next page</string>
 
     <!-- Account Settings -->
     <string name="account_settings_title">Account &amp; Security</string>

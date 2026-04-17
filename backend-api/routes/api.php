@@ -32,10 +32,17 @@ Route::prefix('v1')->group(function () {
             Route::post('/users/{id}/reset-password', [UserController::class, 'resetPassword']);
             Route::apiResource('users', UserController::class);
 
-            // Student Management Routes (Admin Only)
+            // Student Management (Admin Only)
             Route::post('/students/import', [StudentController::class, 'import']);
-            Route::apiResource('students', StudentController::class);
+            Route::post('/students', [StudentController::class, 'store']);
+            Route::put('/students/{student}', [StudentController::class, 'update']);
+            Route::patch('/students/{student}', [StudentController::class, 'update']);
+            Route::delete('/students/{student}', [StudentController::class, 'destroy']);
         });
+
+        // Student Lookup (Admin + Staff)
+        Route::get('/students', [StudentController::class, 'index']);
+        Route::get('/students/{student}', [StudentController::class, 'show']);
 
         Route::get('/dashboard', [DashboardController::class, 'index']);
         Route::get('/dashboard/stats', [DashboardController::class, 'stats']);

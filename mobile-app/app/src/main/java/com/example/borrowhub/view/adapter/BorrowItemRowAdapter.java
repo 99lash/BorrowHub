@@ -104,7 +104,7 @@ public class BorrowItemRowAdapter extends RecyclerView.Adapter<BorrowItemRowAdap
             List<String> itemNames = new ArrayList<>();
             if (!row.type.isEmpty()) {
                 for (ItemEntity item : allItems) {
-                    if (item.getType().equalsIgnoreCase(row.type)) {
+                    if (item.getType().equalsIgnoreCase(row.type) && item.getAvailableQuantity() > 0) {
                         itemsForType.add(item);
                         itemNames.add(item.getName());
                     }
