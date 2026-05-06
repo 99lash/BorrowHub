@@ -175,7 +175,7 @@ public class StudentManagementFragment extends Fragment implements StudentAdapte
 
         ArrayAdapter<String> courseAdapter = new ArrayAdapter<>(
                 requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
+                R.layout.item_dropdown_multiline,
                 availableCourses
         );
         acCourse.setAdapter(courseAdapter);

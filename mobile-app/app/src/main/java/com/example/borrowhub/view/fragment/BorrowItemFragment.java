@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.borrowhub.R;
 import com.example.borrowhub.databinding.FragmentBorrowItemBinding;
 import com.example.borrowhub.view.adapter.BorrowItemRowAdapter;
 import com.example.borrowhub.viewmodel.TransactionViewModel;
@@ -224,7 +225,7 @@ public class BorrowItemFragment extends Fragment {
     private void setupCourseDropdown() {
         courseAdapter = new ArrayAdapter<>(
                 requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
+                R.layout.item_dropdown_multiline,
                 new ArrayList<>()
         );
         binding.acCourse.setAdapter(courseAdapter);
